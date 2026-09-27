@@ -1,0 +1,315 @@
+{
+  "users": [
+    {
+      "id": "usr_curator",
+      "username": "Dr. Vance",
+      "email": "curator@mindmuseum.org",
+      "passwordHash": "$2a$10$wN9QjE9.2q6X7XhZp9oQO.vD0ZflqL001cOmz0u61W2m234xY/Ece",
+      "role": "curator",
+      "visitorBadgeId": "HMM-CUR-001",
+      "visitorLevel": "Chief Neuro-Curator",
+      "joinDate": "2026-01-01T00:00:00.000Z",
+      "visitedRooms": [
+        "consciousness",
+        "emotions",
+        "memory",
+        "decisions",
+        "identity"
+      ],
+      "badges": [
+        "Master of Mind",
+        "Cortex Pioneer",
+        "Bias Hunter",
+        "Empathy Virtuoso"
+      ]
+    },
+    {
+      "id": "usr_1790490718377",
+      "username": "NeuroNaut",
+      "email": "neuron@mind.org",
+      "passwordHash": "$2b$10$pNqLQvGKiB6DO54utxZLPO9X42PkksdjMSozzM.d9ikTls0/aDmXa",
+      "role": "visitor",
+      "visitorBadgeId": "HMM-VIS-4746",
+      "visitorLevel": "Novice Explorer",
+      "joinDate": "2026-09-27T06:31:58.377Z",
+      "visitedRooms": [],
+      "badges": [
+        "First Step: Museum Admission",
+        "Introspective Philosopher"
+      ]
+    }
+  ],
+  "exhibits": [
+    {
+      "id": "consciousness",
+      "title": "The Hall of Consciousness & Perception",
+      "subtitle": "How 86 billion neurons weave the illusion of subjective reality",
+      "wingNumber": "I",
+      "themeColor": "from-cyan-500/20 to-blue-600/10",
+      "accentColor": "#38bdf8",
+      "icon": "eye",
+      "curatorQuote": "We do not see things as they are, we see them as we are wired to interpret them.",
+      "pioneers": [
+        "William James",
+        "David Chalmers",
+        "V.S. Ramachandran"
+      ],
+      "brainRegions": [
+        "Occipital Lobe",
+        "Thalamus",
+        "Default Mode Network (DMN)"
+      ],
+      "description": "Consciousness remains the ultimate frontier of human science—often called the 'Hard Problem'. In this wing, step through the sensory filter, examine optical illusions where your brain hallucinates stability, and investigate the phenomenon of sensory gating.",
+      "keyConcepts": [
+        {
+          "name": "Sensory Gating & Thalamic Filtering",
+          "summary": "Every second, your sensory organs receive 11 million bits of information, but your conscious mind can only process approximately 50 bits per second. The thalamus acts as the brain's executive bouncer."
+        },
+        {
+          "name": "Gestalt Principles of Organization",
+          "summary": "The brain instinctively groups disconnected visual inputs into cohesive shapes through proximity, similarity, continuity, and closure."
+        },
+        {
+          "name": "The Predictive Brain Hypothesis",
+          "summary": "Perception is not a passive camera feed; it is an active top-down controlled hallucination constrained by sensory feedback (Karl Friston)."
+        }
+      ],
+      "interactiveModules": [
+        "optical-illusions",
+        "sensory-gate-sim",
+        "gestalt-sandbox"
+      ]
+    },
+    {
+      "id": "emotions",
+      "title": "The Gallery of Emotions & Affect",
+      "subtitle": "The visceral symphony of the limbic system and emotional architecture",
+      "wingNumber": "II",
+      "themeColor": "from-rose-500/20 to-pink-600/10",
+      "accentColor": "#fb7185",
+      "icon": "heart-pulse",
+      "curatorQuote": "Emotions are not irrational disruptions; they are ancient biological heuristics forged over millions of years for survival.",
+      "pioneers": [
+        "Paul Ekman",
+        "Robert Plutchik",
+        "Lisa Feldman Barrett",
+        "Antonio Damasio"
+      ],
+      "brainRegions": [
+        "Amygdala",
+        "Anterior Insula",
+        "Ventral Striatum",
+        "Hypothalamus"
+      ],
+      "description": "Explore the evolutionary matrix of feeling. Traverse Robert Plutchik's 3D emotional wheel, dissect the micro-expressions that escape conscious masking, and experience the neuro-somatic feedback loops connecting the vagus nerve to gut-brain intuition.",
+      "keyConcepts": [
+        {
+          "name": "Plutchik's Vector of Affect",
+          "summary": "Emotions blend like primary colors. Fear combined with Surprise yields Awe; Joy blended with Trust blossoms into Love."
+        },
+        {
+          "name": "The Somatic Marker Hypothesis",
+          "summary": "Damasio showed that without bodily emotional sensations ('gut feelings'), human decision-making becomes paralyzed, even when logic is intact."
+        },
+        {
+          "name": "Constructed Emotion Theory",
+          "summary": "Emotions are not universal hard-wired circuits, but predictive concepts constructed by the brain in real-time to make sense of bodily sensations."
+        }
+      ],
+      "interactiveModules": [
+        "plutchik-wheel",
+        "vagus-breathing-pacer",
+        "mood-frequency-generator"
+      ]
+    },
+    {
+      "id": "memory",
+      "title": "The Memory Archive & Subconscious Vault",
+      "subtitle": "The fragile tapestry of encoding, storage, retrieval, and confabulation",
+      "wingNumber": "III",
+      "themeColor": "from-emerald-500/20 to-teal-600/10",
+      "accentColor": "#34d399",
+      "icon": "archive",
+      "curatorQuote": "Memory is not a video recording stored in a vault; every time you remember something, you rewrite the file.",
+      "pioneers": [
+        "Elizabeth Loftus",
+        "Hermann Ebbinghaus",
+        "Brenda Milner (Patient H.M.)"
+      ],
+      "brainRegions": [
+        "Hippocampus",
+        "Entorhinal Cortex",
+        "Prefrontal Cortex"
+      ],
+      "description": "Step into the deep vault of recollections. Witness how synaptic plasticity encodes fleeting moments, why reconsolidation leaves memories vulnerable to alteration, and how the ancient Method of Loci lets ordinary minds perform monumental feats of recall.",
+      "keyConcepts": [
+        {
+          "name": "Long-Term Potentiation (LTP)",
+          "summary": "Neurons that fire together wire together. High-frequency signals strengthen synaptic connections, crystallizing transient experiences into physical brain structure."
+        },
+        {
+          "name": "The Malleability of Memory & False Memories",
+          "summary": "Dr. Elizabeth Loftus proved that simple misinformation introduced during questioning can manufacture vivid, completely false memories of events that never occurred."
+        },
+        {
+          "name": "Working Memory vs Long-Term Consolidation",
+          "summary": "Working memory holds roughly 4 to 7 chunks of data for seconds. During deep slow-wave sleep, the hippocampus replays these patterns to the neocortex for permanence."
+        }
+      ],
+      "interactiveModules": [
+        "false-memory-lab",
+        "method-of-loci-room",
+        "forgetting-curve-sim"
+      ]
+    },
+    {
+      "id": "decisions",
+      "title": "The Cognitive Lab & Decision Chamber",
+      "subtitle": "Dual-process rationality, behavioral traps, and moral architecture",
+      "wingNumber": "IV",
+      "themeColor": "from-amber-500/20 to-orange-600/10",
+      "accentColor": "#fbbf24",
+      "icon": "scale",
+      "curatorQuote": "We pride ourselves on our intellect, yet our decisions are guided by ancient shortcuts and invisible biases.",
+      "pioneers": [
+        "Daniel Kahneman",
+        "Amos Tversky",
+        "Richard Thaler",
+        "Herbert Simon"
+      ],
+      "brainRegions": [
+        "Dorsolateral Prefrontal Cortex",
+        "Orbitofrontal Cortex",
+        "Anterior Cingulate"
+      ],
+      "description": "Enter the crucible of choice. Experience Kahneman's System 1 (fast, emotional, automatic) wrestling with System 2 (slow, deliberative, lazy). Face the classic moral dilemmas like the Trolley Problem, and test your resistance to framing effects and sunk cost fallacies.",
+      "keyConcepts": [
+        {
+          "name": "System 1 vs System 2 Thinking",
+          "summary": "System 1 operates effortlessly and makes lightning judgments based on pattern recognition; System 2 is logical but energetically expensive and quick to fatigue."
+        },
+        {
+          "name": "Loss Aversion & Prospect Theory",
+          "summary": "The psychological pain of losing $100 is twice as potent as the joy of gaining $100, driving humans into deeply irrational risk hedging."
+        },
+        {
+          "name": "The Framing Effect & Anchoring",
+          "summary": "Identical statistical outcomes yield polar opposite decisions when framed as '90% survival rate' vs '10% mortality rate'."
+        }
+      ],
+      "interactiveModules": [
+        "trolley-dilemma-chamber",
+        "anchoring-experiment",
+        "bias-matrix"
+      ]
+    },
+    {
+      "id": "identity",
+      "title": "The Mirror Maze of Self & Identity",
+      "subtitle": "The narrative ego, split-brain paradoxes, and the Jungian psyche",
+      "wingNumber": "V",
+      "themeColor": "from-purple-500/20 to-indigo-600/10",
+      "accentColor": "#c084fc",
+      "icon": "sparkles",
+      "curatorQuote": "The self is not a static object inside the skull; it is a captivating story your brain invents to stay coherent.",
+      "pioneers": [
+        "Carl Jung",
+        "Michael Gazzaniga",
+        "Roger Sperry",
+        "Sigmund Freud"
+      ],
+      "brainRegions": [
+        "Medial Prefrontal Cortex",
+        "Corpus Callosum",
+        "Temporoparietal Junction"
+      ],
+      "description": "Stand before the infinity mirrors of identity. What happens when the corpus callosum is severed and two independent consciousnesses reside in one skull? Delve into Jung's Persona and Shadow archetypes, and evaluate the narrative fiction of the ego.",
+      "keyConcepts": [
+        {
+          "name": "The Split-Brain Experiments",
+          "summary": "Patients with severed corpus callosums revealed that the left hemisphere acts as an 'interpreter'—concocting rationalizations for actions initiated by the non-verbal right hemisphere."
+        },
+        {
+          "name": "Jungian Archetypes & The Shadow",
+          "summary": "The Persona is the social mask we wear; the Shadow contains the repressed, unacknowledged aspects of self that project onto others."
+        },
+        {
+          "name": "The Narrative Self vs Experiencing Self",
+          "summary": "Neuroscience reveals that the 'I' is not a single commander, but a storytelling module constructing continuous autobiographical meaning."
+        }
+      ],
+      "interactiveModules": [
+        "jungian-archetype-test",
+        "split-brain-simulator",
+        "shadow-reflection"
+      ]
+    }
+  ],
+  "gameScores": [
+    {
+      "id": "sc_demo1",
+      "userId": "usr_curator",
+      "username": "Dr. Vance",
+      "gameId": "stroop",
+      "score": 1850,
+      "reactionTimeMs": 420,
+      "accuracy": 98,
+      "timestamp": "2026-09-20T10:30:00.000Z"
+    },
+    {
+      "id": "sc_demo2",
+      "userId": "usr_curator",
+      "username": "Dr. Vance",
+      "gameId": "memory-matrix",
+      "score": 12,
+      "accuracy": 100,
+      "timestamp": "2026-09-21T14:15:00.000Z"
+    },
+    {
+      "id": "sc_demo3",
+      "userId": "usr_curator",
+      "username": "Dr. Vance",
+      "gameId": "bias-detective",
+      "score": 950,
+      "accuracy": 95,
+      "timestamp": "2026-09-22T16:00:00.000Z"
+    },
+    {
+      "id": "sc_1790490694355",
+      "userId": "guest_23mfcl",
+      "username": "Guest Explorer #894",
+      "gameId": "stroop",
+      "score": 1600,
+      "reactionTimeMs": 380,
+      "accuracy": 100,
+      "details": {},
+      "timestamp": "2026-09-27T06:31:34.355Z"
+    }
+  ],
+  "journalEntries": [
+    {
+      "id": "jrn_1790490718394",
+      "userId": "usr_1790490718377",
+      "username": "NeuroNaut",
+      "room": "consciousness",
+      "title": "The Hard Problem",
+      "content": "Qualia is irreducible to mechanical bits.",
+      "timestamp": "2026-09-27T06:31:58.394Z"
+    },
+    {
+      "id": "jrn_001",
+      "userId": "usr_curator",
+      "username": "Dr. Vance",
+      "room": "consciousness",
+      "title": "Reflections on the Thalamic Gate",
+      "content": "Watching visitors interact with the sensory gating simulation reminded me how fragile our grasp of objective reality is. We inhabit a simulation crafted by evolution.",
+      "timestamp": "2026-09-23T08:00:00.000Z"
+    }
+  ],
+  "aiDocentProfiles": {
+    "name": "Dr. Sophia Vance",
+    "title": "Senior AI Neuro-Curator & Cognitive Guide",
+    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+    "systemPersonality": "Intellectually profound, compassionate, articulate, blending historical psychology (Freud, Jung, James) with cutting-edge neuroscience (fMRI, predictive processing, connectomics). Welcomes visitors with warmth, asks thought-provoking questions, and grounds complex phenomena into unforgettable metaphors."
+  }
+}
