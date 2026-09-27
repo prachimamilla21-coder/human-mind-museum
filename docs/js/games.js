@@ -8,12 +8,39 @@ const Games = {
       const res = await fetch('/api/games/catalog');
       if (res.ok) {
         this.catalog = await res.json();
-        this.renderCatalogGrid();
-        this.launch(this.activeGame);
+      } else {
+        throw new Error('Using offline catalog');
       }
     } catch (e) {
-      console.error('Failed to load games catalog:', e);
+      this.catalog = [
+        {
+          id: "stroop",
+          title: "The Stroop Effect Challenge",
+          subtitle: "Frontal Lobe Conflict & Cognitive Interference Test",
+          metricName: "Interference Delay (ms) & Accuracy"
+        },
+        {
+          id: "memory-matrix",
+          title: "The Working Memory Matrix",
+          subtitle: "Spatial Span & Miller's 7±2 Law Experiment",
+          metricName: "Span Capacity Level"
+        },
+        {
+          id: "bias-detective",
+          title: "Cognitive Bias Detective",
+          subtitle: "Rationality Trial & Fallacy Diagnostics",
+          metricName: "Deductive Rationality Score"
+        },
+        {
+          id: "micro-expressions",
+          title: "Micro-Expression Emotion Decoder",
+          subtitle: "Paul Ekman's High-Speed Facial Action Coding Test",
+          metricName: "Empathy Recognition Index"
+        }
+      ];
     }
+    this.renderCatalogGrid();
+    this.launch(this.activeGame);
   },
 
   renderCatalogGrid() {
@@ -621,31 +648,88 @@ const Games = {
     if (window.lucide) lucide.createIcons();
   },
 
+  getLocalScores() {
+    return JSON.parse(localStorage.getItem('hmm_my_scores') || '[]');
+  },
+
   async submitScore(gameId, score, rt, acc) {
     AudioAmbiance.playSfx('click');
-    const token = Auth.getToken();
-    if (!token) {
-      Auth.openAuthModal('login');
-      App.showToast('Please sign in or get a pass to record scores!');
-      return;
+
+    // Auto-create guest pass if user not signed in
+    if (!Auth.isLoggedIn()) {
+      Auth.generateGuestPass();
     }
 
-    try {
-      const res = await fetch('/api/games/submit', {
+    const u = Auth.currentUser || { username: 'Explorer', id: 'usr_guest' };
+    const scoreRecord = {
+      id: `sc_${Date.now()}`,
+      userId: u.id,
+      username: u.username,
+      gameId,
+      score: Number(score),
+      reactionTimeMs: rt ? Number(rt) : null,
+      accuracy: acc !== undefined ? Number(acc) : 100,
+      timestamp: new Date().toISOString()
+    };
+
+    // Save to local scores
+    const myScores = this.getLocalScores();
+    myScores.push(scoreRecord);
+    localStorage.setItem('hmm_my_scores', JSON.stringify(myScores));
+
+    // Save to local leaderboard
+    const leaderboard = JSON.parse(localStorage.getItem('hmm_leaderboard') || '[]');
+    leaderboard.push(scoreRecord);
+    localStorage.setItem('hmm_leaderboard', JSON.stringify(leaderboard));
+
+    // Award badges
+    let user = Auth.currentUser;
+    let newBadges = [];
+    if (user) {
+      const currentBadges = user.badges || [];
+      if (gameId === 'stroop' && score >= 1200 && !currentBadges.includes('Neural Overdrive')) {
+        currentBadges.push('Neural Overdrive');
+        newBadges.push('Neural Overdrive');
+      }
+      if (gameId === 'memory-matrix' && score >= 5 && !currentBadges.includes('Hippocampal Prodigy')) {
+        currentBadges.push('Hippocampal Prodigy');
+        newBadges.push('Hippocampal Prodigy');
+      }
+      if (gameId === 'bias-detective' && score >= 500 && !currentBadges.includes('Bias Hunter')) {
+        currentBadges.push('Bias Hunter');
+        newBadges.push('Bias Hunter');
+      }
+      if (gameId === 'micro-expressions' && score >= 500 && !currentBadges.includes('Affective Empath')) {
+        currentBadges.push('Affective Empath');
+        newBadges.push('Affective Empath');
+      }
+
+      if (myScores.length >= 3 && user.visitorLevel === 'Novice Explorer') {
+        user.visitorLevel = 'Cognitive Apprentice';
+      }
+      if (myScores.length >= 6) {
+        user.visitorLevel = 'Senior Neuro-Investigator';
+      }
+
+      user.badges = currentBadges;
+      localStorage.setItem(Auth.userKey, JSON.stringify(user));
+      Auth.renderHeader();
+    }
+
+    // Try server sync
+    const token = Auth.getToken();
+    if (token) {
+      fetch('/api/games/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ gameId, score, reactionTimeMs: rt, accuracy: acc })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        AudioAmbiance.playSfx('badge');
-        App.showToast(`Score saved! You beat ${data.percentile}% of visitors.`);
-        if (data.newBadges && data.newBadges.length > 0) {
-          App.showToast(`New Medal Unlocked: ${data.newBadges[0]}!`);
-        }
-      }
-    } catch (e) {
-      console.warn('Score submission error:', e);
+      }).catch(() => {});
+    }
+
+    AudioAmbiance.playSfx('badge');
+    App.showToast(`Neural score archived to your pass! (${score} pts)`);
+    if (newBadges.length > 0) {
+      setTimeout(() => App.showToast(`🏆 Medal Unlocked: ${newBadges[0]}!`), 1000);
     }
   },
 
@@ -656,37 +740,44 @@ const Games = {
     if (!modal || !container) return;
 
     modal.classList.remove('hidden');
-    container.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">Loading hall of fame...</div>`;
 
+    let scores = [];
     try {
       const res = await fetch('/api/games/leaderboard');
-      const scores = await res.json();
+      if (res.ok) scores = await res.json();
+    } catch (e) {}
 
-      if (scores.length === 0) {
-        container.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">No scores recorded yet. Be the first!</div>`;
-        return;
-      }
+    if (!scores || scores.length === 0) {
+      // Default curated leaderboard + user's local scores
+      const defaultScores = [
+        { username: "Dr. Vance", gameId: "stroop", score: 1850, reactionTimeMs: 420 },
+        { username: "Dr. Vance", gameId: "bias-detective", score: 950 },
+        { username: "Prachi (Architect)", gameId: "memory-matrix", score: 1200 },
+        { username: "NeuroNaut", gameId: "micro-expressions", score: 900 }
+      ];
+      const localLeaderboard = JSON.parse(localStorage.getItem('hmm_leaderboard') || '[]');
+      scores = [...localLeaderboard, ...defaultScores].sort((a, b) => b.score - a.score).slice(0, 10);
+    }
 
-      container.innerHTML = scores.map((s, i) => `
-        <div class="p-3 rounded-xl bg-museum-950 border border-slate-800 flex items-center justify-between text-xs">
-          <div class="flex items-center space-x-3">
-            <span class="w-6 h-6 rounded-full ${i === 0 ? 'bg-amber-400 text-museum-950 font-bold' : (i === 1 ? 'bg-slate-300 text-museum-950 font-bold' : (i === 2 ? 'bg-amber-700 text-white font-bold' : 'text-slate-500 font-mono'))} flex items-center justify-center text-[10px]">
-              ${i + 1}
-            </span>
-            <div>
-              <div class="font-bold text-white">${s.username}</div>
-              <div class="font-mono text-[10px] text-slate-400">${s.gameId}</div>
-            </div>
-          </div>
-          <div class="text-right">
-            <div class="font-mono font-bold text-amber-300">${s.score} pts</div>
-            ${s.reactionTimeMs ? `<div class="font-mono text-[10px] text-slate-500">${s.reactionTimeMs}ms</div>` : ''}
+    container.innerHTML = scores.map((s, i) => `
+      <div class="p-3 rounded-xl bg-museum-950 border border-slate-800 flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-3">
+          <span class="w-6 h-6 rounded-full ${i === 0 ? 'bg-amber-400 text-museum-950 font-bold' : (i === 1 ? 'bg-slate-300 text-museum-950 font-bold' : (i === 2 ? 'bg-amber-700 text-white font-bold' : 'text-slate-500 font-mono'))} flex items-center justify-center text-[10px]">
+            ${i + 1}
+          </span>
+          <div>
+            <div class="font-bold text-white">${s.username}</div>
+            <div class="font-mono text-[10px] text-slate-400">${s.gameId}</div>
           </div>
         </div>
-      `).join('');
-    } catch (e) {
-      container.innerHTML = `<div class="text-center py-6 text-xs text-rose-400">Failed to fetch hall of fame.</div>`;
-    }
+        <div class="text-right">
+          <div class="font-mono font-bold text-amber-300">${s.score} pts</div>
+          ${s.reactionTimeMs ? `<div class="font-mono text-[10px] text-slate-500">${s.reactionTimeMs}ms</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    if (window.lucide) lucide.createIcons();
   },
 
   closeLeaderboardModal() {
