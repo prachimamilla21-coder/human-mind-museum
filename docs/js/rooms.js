@@ -31,7 +31,12 @@ const Wings = {
             { name: "Gestalt Principles of Organization", summary: "The brain instinctively groups disconnected visual inputs into cohesive shapes through proximity, similarity, continuity, and closure." },
             { name: "The Predictive Brain Hypothesis", summary: "Perception is not a passive camera feed; it is an active top-down controlled hallucination constrained by sensory feedback." }
           ],
-          interactiveModules: ["optical-illusions", "sensory-gate-sim", "gestalt-sandbox"]
+          interactiveModules: ["optical-illusions", "sensory-gate-sim", "gestalt-sandbox"],
+          thoughtExperiment: {
+            title: "Mary the Color Scientist (Frank Jackson's Dilemma)",
+            scenario: "Mary is a brilliant neuroscientist who lives in a black-and-white room and learns every physical and neurological fact about color perception. One day, she steps outside and sees a ripe red apple for the first time. Does she learn anything new?",
+            takeaway: "If Mary learns something new, physicalism is incomplete: subjective conscious experience ('qualia') cannot be purely reduced to objective neural equations."
+          }
         },
         {
           id: "emotions",
@@ -50,7 +55,12 @@ const Wings = {
             { name: "The Somatic Marker Hypothesis", summary: "Damasio showed that without bodily emotional sensations, human decision-making becomes paralyzed, even when logic is intact." },
             { name: "Constructed Emotion Theory", summary: "Emotions are concepts constructed by the brain in real-time to make sense of bodily sensations." }
           ],
-          interactiveModules: ["plutchik-wheel", "vagus-breathing-pacer", "mood-frequency-generator"]
+          interactiveModules: ["plutchik-wheel", "vagus-breathing-pacer", "mood-frequency-generator"],
+          thoughtExperiment: {
+            title: "The Bridge of Capilano (Dutton & Aron Misattribution Experiment)",
+            scenario: "Young men crossed either a terrifying, swaying 230-foot suspension bridge or a safe cedar bridge. An attractive experimenter interviewed them and offered her phone number. Far more men from the suspension bridge called her back.",
+            takeaway: "The brain frequently misattributes autonomic physiological arousal (racing heart from fear) as romantic attraction."
+          }
         },
         {
           id: "memory",
@@ -69,7 +79,12 @@ const Wings = {
             { name: "False Memories & Misinformation", summary: "Dr. Elizabeth Loftus proved that subtle misinformation can manufacture vivid, completely false memories of events that never occurred." },
             { name: "Working Memory vs Consolidation", summary: "Working memory holds roughly 4 to 7 chunks of data for seconds before hippocampal replay consolidates them during slow-wave sleep." }
           ],
-          interactiveModules: ["false-memory-lab", "method-of-loci-room", "forgetting-curve-sim"]
+          interactiveModules: ["false-memory-lab", "method-of-loci-room", "forgetting-curve-sim"],
+          thoughtExperiment: {
+            title: "The Lost in the Mall Experiment",
+            scenario: "Psychologist Elizabeth Loftus told participants four childhood stories provided by their families. Three were true; one was completely fabricated: getting lost in a shopping mall at age five and rescued by an elderly woman.",
+            takeaway: "Over 25% of participants began 'remembering' rich details of the fake event, proving memories are reconstructed rather than played back."
+          }
         },
         {
           id: "decisions",
@@ -88,7 +103,12 @@ const Wings = {
             { name: "Loss Aversion", summary: "The psychological pain of losing $100 is twice as potent as the joy of gaining $100, driving humans into irrational risk hedging." },
             { name: "The Framing Effect", summary: "Identical statistical outcomes yield polar opposite decisions when framed as '90% survival' vs '10% mortality'." }
           ],
-          interactiveModules: ["trolley-dilemma-chamber", "anchoring-experiment", "bias-matrix"]
+          interactiveModules: ["trolley-dilemma-chamber", "anchoring-experiment", "bias-matrix"],
+          thoughtExperiment: {
+            title: "The Asian Disease Problem (Kahneman & Tversky)",
+            scenario: "When told a disease will kill 600 people, Program A saves 200 people with certainty (chosen by 72%). But when framed as '400 people will die' (Program C), 78% reject it and gamble—despite mathematical equivalence.",
+            takeaway: "Humans are risk-averse when framed as gains, but risk-seeking when the identical outcome is framed as a loss."
+          }
         },
         {
           id: "identity",
@@ -107,7 +127,12 @@ const Wings = {
             { name: "Jungian Archetypes & The Shadow", summary: "The Persona is the social mask we wear; the Shadow contains the repressed aspects of self that project onto others." },
             { name: "The Narrative Self", summary: "The 'I' is not a single commander, but a storytelling module constructing continuous autobiographical meaning." }
           ],
-          interactiveModules: ["jungian-archetype-test", "split-brain-simulator", "shadow-reflection"]
+          interactiveModules: ["jungian-archetype-test", "split-brain-simulator", "shadow-reflection"],
+          thoughtExperiment: {
+            title: "The Teletransporter Paradox (Derek Parfit)",
+            scenario: "A machine scans every atom in your body, destroys your physical form on Earth, and beams the exact blueprint to Mars where a replication chamber reconstitutes you atom-for-atom. Did you travel to Mars, or did you die on Earth while a clone woke up?",
+            takeaway: "Challenges whether the self is an unbroken physical entity or an illusory continuity of memory and consciousness."
+          }
         }
       ];
     }
@@ -193,11 +218,20 @@ const Wings = {
     const container = document.getElementById('activeWingContainer');
     if (!container) return;
 
+    let w = this.exhibits.find(e => e.id === wingId) || this.exhibits[0];
+    if (!w) return;
+
     try {
       const res = await fetch(`/api/exhibits/${wingId}`);
-      const w = await res.json();
+      if (res.ok) {
+        const serverData = await res.json();
+        w = { ...w, ...serverData };
+      }
+    } catch (e) {
+      // In GitHub Pages offline mode, w is already fully loaded!
+    }
 
-      container.innerHTML = `
+    container.innerHTML = `
         <!-- Wing Hero Banner -->
         <div class="rounded-3xl border border-slate-800 bg-gradient-to-r from-museum-900 via-museum-850 to-museum-900 p-8 relative overflow-hidden">
           <div class="max-w-3xl">
