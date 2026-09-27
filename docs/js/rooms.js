@@ -216,7 +216,8 @@ const Wings = {
     let w = this.exhibits.find(e => e.id === wingId) || this.exhibits[0];
     if (!w) return;
 
-    container.innerHTML = `
+    try {
+      container.innerHTML = `
         <!-- Wing Hero Banner -->
         <div class="rounded-3xl border border-slate-800 bg-gradient-to-r from-museum-900 via-museum-850 to-museum-900 p-8 relative overflow-hidden">
           <div class="max-w-3xl">
