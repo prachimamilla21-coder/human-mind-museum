@@ -196,40 +196,25 @@ const Wings = {
     if (window.lucide) lucide.createIcons();
   },
 
-  async selectWing(wingId) {
+  selectWing(wingId) {
     AudioAmbiance.playSfx('click');
     this.activeWingId = wingId;
     App.navigateTo('wings');
     this.renderTabs();
-    await this.renderActiveWing(wingId);
+    this.renderActiveWing(wingId);
 
-    // Record visit on server if logged in
-    const token = Auth.getToken();
-    if (token) {
-      fetch('/api/auth/record-visit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ roomId: wingId })
-      }).catch(() => {});
+    // Record visit on pass
+    if (window.Auth && Auth.recordRoomVisit) {
+      Auth.recordRoomVisit(wingId);
     }
   },
 
-  async renderActiveWing(wingId) {
+  renderActiveWing(wingId) {
     const container = document.getElementById('activeWingContainer');
     if (!container) return;
 
     let w = this.exhibits.find(e => e.id === wingId) || this.exhibits[0];
     if (!w) return;
-
-    try {
-      const res = await fetch(`/api/exhibits/${wingId}`);
-      if (res.ok) {
-        const serverData = await res.json();
-        w = { ...w, ...serverData };
-      }
-    } catch (e) {
-      // In GitHub Pages offline mode, w is already fully loaded!
-    }
 
     container.innerHTML = `
         <!-- Wing Hero Banner -->
