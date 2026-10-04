@@ -1,43 +1,59 @@
-// Interactive Cognitive Psychology Games Engine
+// Interactive Cognitive Psychology Games Engine (All 6 Educational Games)
 const Games = {
   activeGame: 'stroop',
-  catalog: [],
+  catalog: [
+    {
+      id: "stroop",
+      room: "perception",
+      title: "The Stroop Effect Challenge",
+      subtitle: "Frontal Lobe Conflict & Cognitive Interference Test",
+      metricName: "Interference Delay (ms) & Accuracy"
+    },
+    {
+      id: "memory-matrix",
+      room: "memory",
+      title: "The Working Memory Matrix",
+      subtitle: "Spatial Span & Miller's 7±2 Law Experiment",
+      metricName: "Span Capacity Level"
+    },
+    {
+      id: "micro-expressions",
+      room: "emotion",
+      title: "Micro-Expression Emotion Decoder",
+      subtitle: "Paul Ekman's High-Speed Facial Action Coding Test",
+      metricName: "Empathy Recognition Index"
+    },
+    {
+      id: "ocean-test",
+      room: "personality",
+      title: "Big Five OCEAN Assessment",
+      subtitle: "Psychometric Trait Mapping & Holographic Radar Analysis",
+      metricName: "OCEAN Profile Radar"
+    },
+    {
+      id: "bias-detective",
+      room: "cognitive-bias",
+      title: "Cognitive Bias Detective",
+      subtitle: "Peter Wason's Confirmation Bias Trial & Heuristic Hunter",
+      metricName: "Deductive Rationality Score"
+    },
+    {
+      id: "monty-hall",
+      room: "decision-making",
+      title: "Monty Hall Bayesian Dilemma",
+      subtitle: "Conditional Probability Paradox & Risk Simulator",
+      metricName: "Bayesian Win Rate (%)"
+    }
+  ],
 
   async init() {
     try {
       const res = await fetch('/api/games/catalog');
       if (res.ok) {
         this.catalog = await res.json();
-      } else {
-        throw new Error('Using offline catalog');
       }
     } catch (e) {
-      this.catalog = [
-        {
-          id: "stroop",
-          title: "The Stroop Effect Challenge",
-          subtitle: "Frontal Lobe Conflict & Cognitive Interference Test",
-          metricName: "Interference Delay (ms) & Accuracy"
-        },
-        {
-          id: "memory-matrix",
-          title: "The Working Memory Matrix",
-          subtitle: "Spatial Span & Miller's 7±2 Law Experiment",
-          metricName: "Span Capacity Level"
-        },
-        {
-          id: "bias-detective",
-          title: "Cognitive Bias Detective",
-          subtitle: "Rationality Trial & Fallacy Diagnostics",
-          metricName: "Deductive Rationality Score"
-        },
-        {
-          id: "micro-expressions",
-          title: "Micro-Expression Emotion Decoder",
-          subtitle: "Paul Ekman's High-Speed Facial Action Coding Test",
-          metricName: "Empathy Recognition Index"
-        }
-      ];
+      // offline fallback
     }
     this.renderCatalogGrid();
     this.launch(this.activeGame);
@@ -71,7 +87,7 @@ const Games = {
   },
 
   launch(gameId) {
-    AudioAmbiance.playSfx('click');
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
     this.activeGame = gameId;
     this.renderCatalogGrid();
 
@@ -79,6 +95,8 @@ const Games = {
     else if (gameId === 'memory-matrix') this.initMemoryMatrix();
     else if (gameId === 'bias-detective') this.initBiasDetective();
     else if (gameId === 'micro-expressions') this.initMicroExpressions();
+    else if (gameId === 'ocean-test') this.initOceanTest();
+    else if (gameId === 'monty-hall') this.initMontyHallGame();
   },
 
   /* ==========================================
@@ -118,10 +136,10 @@ const Games = {
         </div>
 
         <div id="stroopControls" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-md mx-auto">
-          <button onclick="Games.handleStroopAnswer('RED')" class="py-3 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/50 text-rose-300 font-bold text-xs tracking-wider transition">RED (1)</button>
-          <button onclick="Games.handleStroopAnswer('BLUE')" class="py-3 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 border border-blue-500/50 text-blue-300 font-bold text-xs tracking-wider transition">BLUE (2)</button>
-          <button onclick="Games.handleStroopAnswer('GREEN')" class="py-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/50 text-emerald-300 font-bold text-xs tracking-wider transition">GREEN (3)</button>
-          <button onclick="Games.handleStroopAnswer('YELLOW')" class="py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/50 text-amber-300 font-bold text-xs tracking-wider transition">YELLOW (4)</button>
+          <button onclick="Games.handleStroopAnswer('RED')" class="py-3 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/50 text-rose-300 font-bold text-xs tracking-wider transition">RED</button>
+          <button onclick="Games.handleStroopAnswer('BLUE')" class="py-3 rounded-xl bg-blue-500/20 hover:bg-blue-500/40 border border-blue-500/50 text-blue-300 font-bold text-xs tracking-wider transition">BLUE</button>
+          <button onclick="Games.handleStroopAnswer('GREEN')" class="py-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/50 text-emerald-300 font-bold text-xs tracking-wider transition">GREEN</button>
+          <button onclick="Games.handleStroopAnswer('YELLOW')" class="py-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/50 text-amber-300 font-bold text-xs tracking-wider transition">YELLOW</button>
         </div>
 
         <div class="flex items-center justify-center space-x-4">
@@ -131,10 +149,11 @@ const Games = {
         </div>
       </div>
     `;
+    if (window.lucide) lucide.createIcons();
   },
 
   startStroop() {
-    AudioAmbiance.playSfx('click');
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
     this.stroopState = {
       round: 0,
       maxRounds: 10,
@@ -186,10 +205,10 @@ const Games = {
     this.stroopState.reactionTimes.push(rt);
 
     if (chosenColor === this.stroopState.currentColor) {
-      AudioAmbiance.playSfx('success');
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('success');
       this.stroopState.correctCount++;
     } else {
-      AudioAmbiance.playSfx('error');
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('error');
     }
 
     this.nextStroopTrial();
@@ -201,7 +220,7 @@ const Games = {
     const accuracy = Math.round((this.stroopState.correctCount / this.stroopState.maxRounds) * 100);
     const score = Math.max(100, Math.round((1000 - avgRt) * 2 + accuracy * 10));
 
-    AudioAmbiance.playSfx('badge');
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('badge');
 
     const area = document.getElementById('gameActiveContainer');
     area.innerHTML = `
@@ -226,10 +245,6 @@ const Games = {
           </div>
         </div>
 
-        <p class="text-xs text-slate-300 leading-relaxed font-light">
-          ${avgRt < 600 ? '⚡ Outstanding executive inhibition! Your prefrontal cortex effortlessly suppressed automated reading reflexes.' : 'Strong effort! Slower latencies reflect normal cognitive interference (the Stroop conflict effect).'}
-        </p>
-
         <div class="flex gap-3 justify-center">
           <button onclick="Games.initStroop()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-slate-200 text-xs font-semibold hover:border-slate-700 transition">
             Test Again
@@ -248,155 +263,343 @@ const Games = {
      GAME 2: WORKING MEMORY MATRIX (CORSI SPAN)
      ========================================== */
   matrixState: {
-    level: 3, // starts at 3-tile span
+    level: 3,
     sequence: [],
-    userIndex: 0,
-    isInputAllowed: false
+    userSequence: [],
+    isShowing: false,
+    score: 0
   },
 
   initMemoryMatrix() {
     const area = document.getElementById('gameActiveContainer');
     if (!area) return;
 
+    this.matrixState.level = 3;
+    this.matrixState.score = 0;
+
     area.innerHTML = `
       <div class="w-full max-w-md text-center space-y-6">
         <div>
           <span class="px-3 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs uppercase">
-            Working Memory Span Test (Miller's Law)
+            Spatial Working Memory
           </span>
-          <h3 class="font-display font-bold text-2xl text-white mt-2">The Working Memory Matrix</h3>
-          <p id="matrixInstruction" class="text-xs text-slate-300 mt-1">
-            Observe the tiles flashing in sequence, then click them in the exact same order.
-          </p>
+          <h3 class="font-display font-bold text-2xl text-white mt-2">Working Memory Matrix</h3>
+          <p class="text-xs text-slate-300 mt-1">Memorize the flashing tile sequence and replicate it in order.</p>
         </div>
 
-        <div class="matrix-grid" id="matrixGridContainer">
-          ${[0,1,2,3,4,5,6,7,8].map(i => `
-            <div id="tile-${i}" onclick="Games.handleMatrixClick(${i})" class="matrix-tile"></div>
+        <div id="matrixGrid" class="grid grid-cols-3 gap-3 w-64 h-64 mx-auto p-3 bg-museum-950 rounded-2xl border border-slate-800">
+          ${[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => `
+            <div id="mtile-${i}" onclick="Games.handleTileClick(${i})" class="rounded-xl bg-slate-800/80 border border-slate-700/60 transition cursor-pointer hover:bg-slate-700"></div>
           `).join('')}
         </div>
 
-        <div class="flex items-center justify-between max-w-xs mx-auto text-xs font-mono text-slate-400">
-          <span>Current Span: <strong id="matrixSpanLabel" class="text-emerald-400">Level 3</strong></span>
-          <span>Target: 7±2 chunks</span>
+        <div id="matrixControls">
+          <button onclick="Games.startMatrixRound()" class="px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-bold text-xs tracking-wider transition shadow-lg shadow-emerald-500/20">
+            Start Sequence (Level ${this.matrixState.level})
+          </button>
         </div>
-
-        <button id="matrixStartBtn" onclick="Games.startMatrixRound()" class="px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-bold text-xs tracking-wider shadow-lg shadow-emerald-500/25 transition">
-          Start Memory Sequence
-        </button>
       </div>
     `;
-    this.matrixState.level = 3;
+    if (window.lucide) lucide.createIcons();
   },
 
-  async startMatrixRound() {
-    AudioAmbiance.playSfx('click');
-    const btn = document.getElementById('matrixStartBtn');
-    const instruction = document.getElementById('matrixInstruction');
-    const spanLabel = document.getElementById('matrixSpanLabel');
-    if (btn) btn.classList.add('hidden');
-    if (instruction) instruction.textContent = 'Memorize the flashing sequence...';
-    if (spanLabel) spanLabel.textContent = `Level ${this.matrixState.level}`;
+  startMatrixRound() {
+    const controls = document.getElementById('matrixControls');
+    if (controls) controls.innerHTML = `<span class="text-xs font-mono text-emerald-400 animate-pulse">Memorizing...</span>`;
 
-    this.matrixState.isInputAllowed = false;
     this.matrixState.sequence = [];
-    this.matrixState.userIndex = 0;
+    this.matrixState.userSequence = [];
+    this.matrixState.isShowing = true;
 
     for (let i = 0; i < this.matrixState.level; i++) {
       this.matrixState.sequence.push(Math.floor(Math.random() * 9));
     }
 
-    // Playback sequence
-    for (let i = 0; i < this.matrixState.sequence.length; i++) {
-      await new Promise(r => setTimeout(r, 600));
-      const tileIndex = this.matrixState.sequence[i];
-      const tileEl = document.getElementById(`tile-${tileIndex}`);
-      if (tileEl) {
-        tileEl.classList.add('active-flash');
-        AudioAmbiance.playSfx('click');
-        await new Promise(r => setTimeout(r, 450));
-        tileEl.classList.remove('active-flash');
-      }
-    }
+    let delay = 600;
+    this.matrixState.sequence.forEach((tileIdx, step) => {
+      setTimeout(() => {
+        const el = document.getElementById(`mtile-${tileIdx}`);
+        if (el) {
+          el.classList.add('bg-emerald-400', 'shadow-lg', 'shadow-emerald-500/50');
+          if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
+          setTimeout(() => {
+            el.classList.remove('bg-emerald-400', 'shadow-lg', 'shadow-emerald-500/50');
+          }, 400);
+        }
+      }, (step + 1) * delay);
+    });
 
-    if (instruction) instruction.textContent = 'Now click the tiles in the exact sequence!';
-    this.matrixState.isInputAllowed = true;
+    setTimeout(() => {
+      this.matrixState.isShowing = false;
+      if (controls) controls.innerHTML = `<span class="text-xs font-mono text-cyan-300">Your turn: Tap ${this.matrixState.level} tiles!</span>`;
+    }, (this.matrixState.sequence.length + 1) * delay);
   },
 
-  handleMatrixClick(index) {
-    if (!this.matrixState.isInputAllowed) return;
+  handleTileClick(tileIdx) {
+    if (this.matrixState.isShowing) return;
 
-    const tileEl = document.getElementById(`tile-${index}`);
-    const expected = this.matrixState.sequence[this.matrixState.userIndex];
+    const el = document.getElementById(`mtile-${tileIdx}`);
+    if (el) {
+      el.classList.add('bg-cyan-400');
+      setTimeout(() => el.classList.remove('bg-cyan-400'), 250);
+    }
 
-    if (index === expected) {
-      AudioAmbiance.playSfx('success');
-      tileEl.classList.add('correct');
-      setTimeout(() => tileEl.classList.remove('correct'), 250);
+    this.matrixState.userSequence.push(tileIdx);
+    const currStep = this.matrixState.userSequence.length - 1;
 
-      this.matrixState.userIndex++;
-      if (this.matrixState.userIndex >= this.matrixState.sequence.length) {
-        // Level cleared!
-        AudioAmbiance.playSfx('badge');
-        this.matrixState.level++;
-        const instruction = document.getElementById('matrixInstruction');
-        if (instruction) instruction.textContent = `Excellent! Level ${this.matrixState.level - 1} mastered. Advancing to Level ${this.matrixState.level}...`;
-        this.matrixState.isInputAllowed = false;
-        setTimeout(() => this.startMatrixRound(), 1200);
+    if (this.matrixState.userSequence[currStep] !== this.matrixState.sequence[currStep]) {
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('error');
+      this.finishMatrix(false);
+      return;
+    }
+
+    if (this.matrixState.userSequence.length === this.matrixState.sequence.length) {
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('success');
+      this.matrixState.score += this.matrixState.level * 100;
+      this.matrixState.level++;
+      const controls = document.getElementById('matrixControls');
+      if (controls) {
+        controls.innerHTML = `
+          <button onclick="Games.startMatrixRound()" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-museum-950 font-bold text-xs transition">
+            Level ${this.matrixState.level} Passed! Next Sequence &rarr;
+          </button>
+        `;
       }
-    } else {
-      // Mistake: game over
-      AudioAmbiance.playSfx('error');
-      tileEl.classList.add('wrong');
-      this.matrixState.isInputAllowed = false;
-      setTimeout(() => this.finishMatrix(), 600);
     }
   },
 
-  finishMatrix() {
-    const finalSpan = this.matrixState.level - 1;
-    const score = finalSpan * 150;
-    AudioAmbiance.playSfx('badge');
-
+  finishMatrix(won) {
     const area = document.getElementById('gameActiveContainer');
+    const finalScore = this.matrixState.score || 100;
+    const finalSpan = this.matrixState.level - 1;
+
     area.innerHTML = `
       <div class="w-full max-w-md text-center space-y-6">
-        <div class="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center mx-auto text-emerald-300">
-          <i data-lucide="award" class="w-8 h-8"></i>
-        </div>
-        <h3 class="font-display font-bold text-2xl text-white">Working Memory Span Evaluated</h3>
-        
+        <h3 class="font-display font-bold text-2xl text-white">Memory Test Completed</h3>
         <div class="p-5 rounded-2xl bg-museum-950 border border-slate-800">
-          <span class="text-xs font-mono text-slate-400 uppercase tracking-widest block mb-1">Max Visuospatial Span</span>
-          <div class="font-display font-black text-4xl text-emerald-400">${finalSpan} Items</div>
-          <p class="text-xs text-slate-400 mt-2">
-            Average human working memory capacity is <strong>7 ± 2 chunks</strong> (George Miller, 1956).
-          </p>
+          <span class="text-xs font-mono text-slate-400 uppercase">Working Memory Span</span>
+          <div class="font-display font-black text-4xl text-emerald-400 mt-1">${finalSpan} Items</div>
+          <p class="text-xs text-slate-400 mt-2">Miller's Law predicts human immediate span is 7 ± 2 items.</p>
         </div>
-
         <div class="flex gap-3 justify-center">
-          <button onclick="Games.initMemoryMatrix()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-slate-200 text-xs font-semibold hover:border-slate-700 transition">
-            Retry Matrix
-          </button>
-          <button onclick="Games.submitScore('memory-matrix', ${finalSpan}, null, 100)" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-museum-950 font-bold text-xs transition shadow-lg shadow-emerald-500/20">
-            Archive to Visitor Pass
-          </button>
+          <button onclick="Games.initMemoryMatrix()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-xs text-white">Try Again</button>
+          <button onclick="Games.submitScore('memory-matrix', ${finalScore}, null, 100)" class="px-6 py-2.5 rounded-xl bg-emerald-500 text-museum-950 font-bold text-xs">Save to Pass</button>
         </div>
       </div>
     `;
-
     if (window.lucide) lucide.createIcons();
   },
 
   /* ==========================================
-     GAME 3: COGNITIVE BIAS DETECTIVE
+     GAME 3: MICRO-EXPRESSIONS
+     ========================================== */
+  microTrials: [
+    { emotion: "Contempt", cue: "Unilateral lip sneer", faceEmoji: "😏" },
+    { emotion: "Genuine Joy", cue: "Duchenne eye crinkle", faceEmoji: "😊" },
+    { emotion: "Fear", cue: "Eyebrows raised and pulled together", faceEmoji: "😨" },
+    { emotion: "Disgust", cue: "Nose wrinkling, raised lip", faceEmoji: "🤢" }
+  ],
+  microIndex: 0,
+  microScore: 0,
+
+  initMicroExpressions() {
+    this.microIndex = 0;
+    this.microScore = 0;
+    this.renderMicroTrial();
+  },
+
+  renderMicroTrial() {
+    const area = document.getElementById('gameActiveContainer');
+    if (!area) return;
+
+    if (this.microIndex >= this.microTrials.length) {
+      this.finishMicro();
+      return;
+    }
+
+    const t = this.microTrials[this.microIndex];
+    area.innerHTML = `
+      <div class="w-full max-w-md text-center space-y-6">
+        <div>
+          <span class="px-3 py-1 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-xs uppercase">Paul Ekman FACS Test</span>
+          <h3 class="font-display font-bold text-2xl text-white mt-2">Micro-Expression Decoder</h3>
+          <p class="text-xs text-slate-300 mt-1">Trial ${this.microIndex + 1} of ${this.microTrials.length}: Click Flash to reveal for 400ms.</p>
+        </div>
+        <div id="microFaceBox" class="w-40 h-40 rounded-3xl bg-museum-950 border border-slate-800 flex items-center justify-center mx-auto text-6xl select-none">😐</div>
+        <button id="flashBtn" onclick="Games.flashMicroFace('${t.faceEmoji}')" class="px-6 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 text-xs font-semibold transition">
+          Flash Micro-Expression (400ms)
+        </button>
+        <div id="microOptions" class="hidden grid grid-cols-2 gap-3 max-w-xs mx-auto">
+          <button onclick="Games.checkMicro('Contempt')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Contempt</button>
+          <button onclick="Games.checkMicro('Genuine Joy')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Genuine Joy</button>
+          <button onclick="Games.checkMicro('Fear')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Fear</button>
+          <button onclick="Games.checkMicro('Disgust')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Disgust</button>
+        </div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+  },
+
+  flashMicroFace(emoji) {
+    const box = document.getElementById('microFaceBox');
+    const flashBtn = document.getElementById('flashBtn');
+    const options = document.getElementById('microOptions');
+    box.textContent = emoji;
+    setTimeout(() => {
+      box.textContent = '😐';
+      if (flashBtn) flashBtn.classList.add('hidden');
+      if (options) options.classList.remove('hidden');
+    }, 400);
+  },
+
+  checkMicro(choice) {
+    const t = this.microTrials[this.microIndex];
+    if (choice === t.emotion) {
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('success');
+      this.microScore += 250;
+    } else {
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('error');
+    }
+    this.microIndex++;
+    setTimeout(() => this.renderMicroTrial(), 400);
+  },
+
+  finishMicro() {
+    const area = document.getElementById('gameActiveContainer');
+    area.innerHTML = `
+      <div class="w-full max-w-md text-center space-y-6">
+        <h3 class="font-display font-bold text-2xl text-white">Affective Recognition Index</h3>
+        <div class="p-5 rounded-2xl bg-museum-950 border border-slate-800">
+          <div class="font-display font-black text-4xl text-rose-400">${this.microScore} / 1000</div>
+          <p class="text-xs text-slate-400 mt-2">Recognizing sub-second micro-expressions reflects affective empathy.</p>
+        </div>
+        <div class="flex gap-3 justify-center">
+          <button onclick="Games.initMicroExpressions()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-xs text-white">Try Again</button>
+          <button onclick="Games.submitScore('micro-expressions', ${this.microScore}, null, 95)" class="px-6 py-2.5 rounded-xl bg-rose-500 text-museum-950 font-bold text-xs">Save to Pass</button>
+        </div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+  },
+
+  /* ==========================================
+     GAME 4: BIG FIVE OCEAN RADAR ASSESSMENT
+     ========================================== */
+  oceanQuestions: [
+    { text: "I have a vibrant, active imagination and enjoy artistic, abstract ideas.", trait: "O" },
+    { text: "I keep my workspace orderly, meet deadlines reliably, and follow plans.", trait: "C" },
+    { text: "I feel energized in groups and readily strike up conversations.", trait: "E" },
+    { text: "I sympathize with others' feelings and prioritize cooperation over competition.", trait: "A" },
+    { text: "I frequently experience worry, stress, or shifts in mood under pressure.", trait: "N" }
+  ],
+  oceanScores: { O: 50, C: 50, E: 50, A: 50, N: 50 },
+
+  initOceanTest() {
+    const area = document.getElementById('gameActiveContainer');
+    if (!area) return;
+
+    area.innerHTML = `
+      <div class="w-full max-w-xl space-y-6">
+        <div class="text-center">
+          <span class="px-3 py-1 rounded-md bg-purple-500/10 border border-purple-500/30 text-purple-400 font-mono text-xs uppercase">Psychometric Trait Model</span>
+          <h3 class="font-display font-bold text-2xl text-white mt-2">Big Five (OCEAN) Radar Test</h3>
+          <p class="text-xs text-slate-300 mt-1">Rate how strongly each statement describes your natural tendencies (1-5):</p>
+        </div>
+
+        <form id="oceanForm" onsubmit="Games.handleOceanSubmit(event)" class="space-y-4">
+          ${this.oceanQuestions.map((q, idx) => `
+            <div class="p-4 rounded-xl bg-museum-950 border border-slate-800">
+              <p class="text-xs text-slate-200 mb-3 font-semibold">${idx + 1}. ${q.text}</p>
+              <div class="flex items-center justify-between text-xs font-mono text-slate-400 px-2">
+                <span>Strongly Disagree</span>
+                <div class="flex space-x-3">
+                  ${[1, 2, 3, 4, 5].map(val => `
+                    <label class="cursor-pointer flex flex-col items-center">
+                      <input type="radio" name="ocean_${q.trait}" value="${val * 20}" required class="text-purple-500">
+                      <span class="text-[10px] text-slate-500 mt-1">${val}</span>
+                    </label>
+                  `).join('')}
+                </div>
+                <span>Strongly Agree</span>
+              </div>
+            </div>
+          `).join('')}
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-purple-500/20">
+            Compute Holographic Radar Chart
+          </button>
+        </form>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+  },
+
+  handleOceanSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    this.oceanScores.O = parseInt(form.querySelector('input[name="ocean_O"]:checked').value);
+    this.oceanScores.C = parseInt(form.querySelector('input[name="ocean_C"]:checked').value);
+    this.oceanScores.E = parseInt(form.querySelector('input[name="ocean_E"]:checked').value);
+    this.oceanScores.A = parseInt(form.querySelector('input[name="ocean_A"]:checked').value);
+    this.oceanScores.N = parseInt(form.querySelector('input[name="ocean_N"]:checked').value);
+
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('badge');
+
+    const area = document.getElementById('gameActiveContainer');
+    area.innerHTML = `
+      <div class="w-full max-w-lg text-center space-y-6">
+        <h3 class="font-display font-bold text-2xl text-white">Your Holographic OCEAN Profile</h3>
+        
+        <!-- Interactive SVG Radar Chart -->
+        <div class="w-64 h-64 mx-auto relative flex items-center justify-center p-2 bg-museum-950 rounded-full border border-slate-800">
+          <svg viewBox="0 0 200 200" class="w-full h-full">
+            <!-- Radar concentric circles -->
+            <circle cx="100" cy="100" r="30" fill="none" stroke="#334155" stroke-dasharray="2,2"/>
+            <circle cx="100" cy="100" r="60" fill="none" stroke="#334155" stroke-dasharray="2,2"/>
+            <circle cx="100" cy="100" r="85" fill="none" stroke="#475569" stroke-width="1.5"/>
+            <!-- Spokes -->
+            <line x1="100" y1="100" x2="100" y2="15" stroke="#475569" stroke-width="1"/>
+            <line x1="100" y1="100" x2="180" y2="70" stroke="#475569" stroke-width="1"/>
+            <line x1="100" y1="100" x2="150" y2="165" stroke="#475569" stroke-width="1"/>
+            <line x1="100" y1="100" x2="50" y2="165" stroke="#475569" stroke-width="1"/>
+            <line x1="100" y1="100" x2="20" y2="70" stroke="#475569" stroke-width="1"/>
+            <!-- Data polygon -->
+            <polygon points="
+              100,${100 - (this.oceanScores.O * 0.85)}
+              ${100 + (this.oceanScores.C * 0.8)},${100 - (this.oceanScores.C * 0.3)}
+              ${100 + (this.oceanScores.E * 0.5)},${100 + (this.oceanScores.E * 0.65)}
+              ${100 - (this.oceanScores.A * 0.5)},${100 + (this.oceanScores.A * 0.65)}
+              ${100 - (this.oceanScores.N * 0.8)},${100 - (this.oceanScores.N * 0.3)}
+            " fill="rgba(168, 85, 247, 0.35)" stroke="#c084fc" stroke-width="2"/>
+          </svg>
+        </div>
+
+        <div class="grid grid-cols-5 gap-2 text-center text-xs font-mono">
+          <div class="p-2 bg-museum-950 rounded-lg border border-purple-500/30">O: ${this.oceanScores.O}%</div>
+          <div class="p-2 bg-museum-950 rounded-lg border border-blue-500/30">C: ${this.oceanScores.C}%</div>
+          <div class="p-2 bg-museum-950 rounded-lg border border-amber-500/30">E: ${this.oceanScores.E}%</div>
+          <div class="p-2 bg-museum-950 rounded-lg border border-emerald-500/30">A: ${this.oceanScores.A}%</div>
+          <div class="p-2 bg-museum-950 rounded-lg border border-rose-500/30">N: ${this.oceanScores.N}%</div>
+        </div>
+
+        <div class="flex gap-3 justify-center">
+          <button onclick="Games.initOceanTest()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-xs text-white">Retake</button>
+          <button onclick="Games.submitScore('ocean-test', 850, null, 100)" class="px-6 py-2.5 rounded-xl bg-purple-500 text-museum-950 font-bold text-xs">Save to Pass</button>
+        </div>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+  },
+
+  /* ==========================================
+     GAME 5: BIAS DETECTIVE
      ========================================== */
   biasCases: [
     {
-      caseText: "A startup founder has invested \$200,000 and two grueling years into a doomed product. Despite zero active users, she says: 'We have to keep going, otherwise all that money and sweat was wasted!'",
+      caseText: "A movie enthusiast spent $15 on a terrible cinema ticket. Even though the movie gave them a headache within 20 minutes, they refused to leave early, stating: 'I cannot waste my $15!'",
       correct: "Sunk Cost Fallacy",
-      options: ["Sunk Cost Fallacy", "Anchoring Bias", "Survivorship Bias", "Fundamental Attribution Error"],
-      explanation: "The Sunk Cost Fallacy occurs when people continue a behavior as a result of previously invested resources that cannot be recovered."
+      options: ["Sunk Cost Fallacy", "Anchoring Bias", "Confirmation Bias", "Gambler's Fallacy"],
+      explanation: "The $15 is already unrecoverable. Staying only wastes additional valuable time and well-being."
     },
     {
       caseText: "A roulette wheel has landed on RED seven consecutive times. A player confidently bets their remaining chips on BLACK, insisting: 'Black is overdue to balance the universe!'",
@@ -408,7 +611,7 @@ const Games = {
       caseText: "After viewing an intense 24-hour news report covering a rare plane crash, a traveler chooses to drive 1,500 miles instead, convinced commercial flying is far too lethal.",
       correct: "Availability Heuristic",
       options: ["Availability Heuristic", "Hindsight Bias", "Loss Aversion", "Dunning-Kruger Effect"],
-      explanation: "The Availability Heuristic causes people to estimate probability based on how easily vivid emotional examples come to mind, rather than statistical reality."
+      explanation: "The Availability Heuristic causes people to estimate probability based on how easily vivid emotional examples come to mind."
     },
     {
       caseText: "A manager only reads customer reviews that praise his favorite feature while dismissing negative reviews as 'anomalies written by competitors'.",
@@ -442,85 +645,47 @@ const Games = {
           <span class="text-xs font-mono text-amber-400">Case ${this.biasIndex + 1} of ${this.biasCases.length}</span>
           <span class="text-xs font-mono text-slate-400">Score: ${this.biasScore} pts</span>
         </div>
-
         <div class="p-6 rounded-2xl bg-museum-950 border border-slate-800">
           <h4 class="font-display font-bold text-lg text-white mb-2">Diagnostic Scenario:</h4>
           <p class="text-sm text-slate-300 leading-relaxed font-light">"${c.caseText}"</p>
         </div>
-
-        <p class="text-xs font-mono text-slate-400 text-center uppercase tracking-wider">Identify the Cognitive Bias:</p>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           ${c.options.map(opt => `
-            <button onclick="Games.checkBiasAnswer('${opt}')" class="p-3.5 rounded-xl bg-museum-950 border border-slate-800 hover:border-amber-500/50 hover:bg-slate-800/40 text-left text-xs font-semibold text-slate-200 transition">
+            <button onclick="Games.checkBiasAnswer('${opt}')" class="p-3.5 rounded-xl bg-museum-950 border border-slate-800 hover:border-amber-500/50 text-left text-xs font-semibold text-slate-200 transition">
               ${opt}
             </button>
           `).join('')}
         </div>
       </div>
     `;
+    if (window.lucide) lucide.createIcons();
   },
 
   checkBiasAnswer(choice) {
     const c = this.biasCases[this.biasIndex];
     const isCorrect = choice === c.correct;
-
     if (isCorrect) {
-      AudioAmbiance.playSfx('success');
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('success');
       this.biasScore += 250;
     } else {
-      AudioAmbiance.playSfx('error');
+      if (window.AudioAmbiance) AudioAmbiance.playSfx('error');
     }
-
-    const area = document.getElementById('gameActiveContainer');
-    area.innerHTML = `
-      <div class="w-full max-w-md text-center space-y-5">
-        <div class="w-12 h-12 rounded-full ${isCorrect ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500' : 'bg-rose-500/20 text-rose-400 border border-rose-500'} flex items-center justify-center mx-auto">
-          <i data-lucide="${isCorrect ? 'check' : 'x'}" class="w-6 h-6"></i>
-        </div>
-        <h4 class="font-display font-bold text-xl text-white">${isCorrect ? 'Correct Diagnosis!' : 'Incorrect Fallacy'}</h4>
-        <p class="text-xs text-amber-300 font-mono">Actual Bias: ${c.correct}</p>
-        <p class="text-xs text-slate-300 leading-relaxed bg-museum-950 p-4 rounded-xl border border-slate-800">${c.explanation}</p>
-        <button onclick="Games.advanceBias()" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-museum-950 font-bold text-xs transition">
-          Next Scenario
-        </button>
-      </div>
-    `;
-
-    if (window.lucide) lucide.createIcons();
-  },
-
-  advanceBias() {
-    AudioAmbiance.playSfx('click');
     this.biasIndex++;
-    this.renderBiasQuestion();
+    setTimeout(() => this.renderBiasQuestion(), 500);
   },
 
   finishBiasDetective() {
-    AudioAmbiance.playSfx('badge');
     const area = document.getElementById('gameActiveContainer');
     area.innerHTML = `
       <div class="w-full max-w-md text-center space-y-6">
-        <div class="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center mx-auto text-amber-300">
-          <i data-lucide="shield-check" class="w-8 h-8"></i>
-        </div>
         <h3 class="font-display font-bold text-2xl text-white">Trial Completed</h3>
-        
         <div class="p-5 rounded-2xl bg-museum-950 border border-slate-800">
-          <span class="text-xs font-mono text-slate-400 uppercase tracking-widest block mb-1">Rationality Score</span>
           <div class="font-display font-black text-4xl text-amber-400">${this.biasScore} / 1000</div>
-          <p class="text-xs text-slate-400 mt-2">
-            ${this.biasScore >= 750 ? 'Exceptional critical discernment! You possess strong resistance to cognitive heuristics.' : 'Insightful effort! Review Wing IV to sharpen your System 2 defenses.'}
-          </p>
+          <p class="text-xs text-slate-400 mt-2">Critical discernment unmasks bounded rationality.</p>
         </div>
-
         <div class="flex gap-3 justify-center">
-          <button onclick="Games.initBiasDetective()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-slate-200 text-xs font-semibold hover:border-slate-700 transition">
-            Retrial
-          </button>
-          <button onclick="Games.submitScore('bias-detective', ${this.biasScore}, null, Math.round((this.biasScore/1000)*100))" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-museum-950 font-bold text-xs transition shadow-lg shadow-amber-500/20">
-            Archive to Visitor Pass
-          </button>
+          <button onclick="Games.initBiasDetective()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-xs text-white">Retrial</button>
+          <button onclick="Games.submitScore('bias-detective', ${this.biasScore}, null, 100)" class="px-6 py-2.5 rounded-xl bg-amber-500 text-museum-950 font-bold text-xs">Save to Pass</button>
         </div>
       </div>
     `;
@@ -528,119 +693,47 @@ const Games = {
   },
 
   /* ==========================================
-     GAME 4: MICRO-EXPRESSION EMOTION DECODER
+     GAME 6: MONTY HALL PROBABILITY SIMULATOR
      ========================================== */
-  microTrials: [
-    { emotion: "Contempt", cue: "Unilateral lip corner tightener and slight sneer on one side", faceEmoji: "😏" },
-    { emotion: "Genuine Joy", cue: "Duchenne marker: orbicularis oculi contraction with crow's feet and symmetric smile", faceEmoji: "😊" },
-    { emotion: "Fear", cue: "Eyebrows raised and pulled together, upper eyelids tensed, mouth slightly open", faceEmoji: "😨" },
-    { emotion: "Disgust", cue: "Nose wrinkling, raised upper lip, narrowed eyes", faceEmoji: "🤢" }
-  ],
-  microIndex: 0,
-  microScore: 0,
+  montySim: { trials: 0, switchWins: 0, stayWins: 0 },
 
-  initMicroExpressions() {
-    this.microIndex = 0;
-    this.microScore = 0;
-    this.renderMicroTrial();
-  },
-
-  renderMicroTrial() {
+  initMontyHallGame() {
     const area = document.getElementById('gameActiveContainer');
     if (!area) return;
 
-    if (this.microIndex >= this.microTrials.length) {
-      this.finishMicro();
-      return;
-    }
-
-    const t = this.microTrials[this.microIndex];
     area.innerHTML = `
-      <div class="w-full max-w-md text-center space-y-6">
+      <div class="w-full max-w-xl text-center space-y-6">
         <div>
-          <span class="px-3 py-1 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 font-mono text-xs uppercase">
-            Paul Ekman FACS Test
-          </span>
-          <h3 class="font-display font-bold text-2xl text-white mt-2">Micro-Expression Decoder</h3>
-          <p class="text-xs text-slate-300 mt-1">
-            Trial ${this.microIndex + 1} of ${this.microTrials.length}: Press reveal to flash the high-speed involuntary expression for 400ms.
-          </p>
+          <span class="px-3 py-1 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono text-xs uppercase">Bayesian Probability</span>
+          <h3 class="font-display font-bold text-2xl text-white mt-2">Monty Hall Fast Probability Simulator</h3>
+          <p class="text-xs text-slate-300 mt-1">Simulate 100 trials of Switching vs Staying to observe the 66.7% law emerge in real time!</p>
         </div>
 
-        <div id="microFaceBox" class="w-40 h-40 rounded-3xl bg-museum-950 border border-slate-800 flex items-center justify-center mx-auto text-6xl shadow-inner select-none transition-all">
-          😐
-        </div>
-
-        <button id="flashBtn" onclick="Games.flashMicroFace('${t.faceEmoji}')" class="px-6 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 text-xs font-semibold transition">
-          Flash Micro-Expression (400ms)
-        </button>
-
-        <div id="microOptions" class="hidden grid grid-cols-2 gap-3 max-w-xs mx-auto">
-          <button onclick="Games.checkMicro('Contempt')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Contempt</button>
-          <button onclick="Games.checkMicro('Genuine Joy')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Genuine Joy</button>
-          <button onclick="Games.checkMicro('Fear')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Fear</button>
-          <button onclick="Games.checkMicro('Disgust')" class="p-3 rounded-xl bg-museum-950 border border-slate-800 hover:border-rose-400 text-xs text-white">Disgust</button>
-        </div>
-      </div>
-    `;
-  },
-
-  flashMicroFace(emoji) {
-    AudioAmbiance.playSfx('click');
-    const box = document.getElementById('microFaceBox');
-    const flashBtn = document.getElementById('flashBtn');
-    const options = document.getElementById('microOptions');
-
-    box.textContent = emoji;
-    box.classList.add('border-rose-500', 'scale-105');
-
-    setTimeout(() => {
-      box.textContent = '😐';
-      box.classList.remove('border-rose-500', 'scale-105');
-      if (flashBtn) flashBtn.classList.add('hidden');
-      if (options) options.classList.remove('hidden');
-    }, 400);
-  },
-
-  checkMicro(choice) {
-    const t = this.microTrials[this.microIndex];
-    const isCorrect = choice === t.emotion;
-
-    if (isCorrect) {
-      AudioAmbiance.playSfx('success');
-      this.microScore += 250;
-    } else {
-      AudioAmbiance.playSfx('error');
-    }
-
-    this.microIndex++;
-    setTimeout(() => this.renderMicroTrial(), 500);
-  },
-
-  finishMicro() {
-    AudioAmbiance.playSfx('badge');
-    const area = document.getElementById('gameActiveContainer');
-    area.innerHTML = `
-      <div class="w-full max-w-md text-center space-y-6">
-        <div class="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-400 flex items-center justify-center mx-auto text-rose-300">
-          <i data-lucide="smile" class="w-8 h-8"></i>
-        </div>
-        <h3 class="font-display font-bold text-2xl text-white">Affective Recognition Index</h3>
-        
-        <div class="p-5 rounded-2xl bg-museum-950 border border-slate-800">
-          <span class="text-xs font-mono text-slate-400 uppercase tracking-widest block mb-1">Score</span>
-          <div class="font-display font-black text-4xl text-rose-400">${this.microScore} / 1000</div>
-          <p class="text-xs text-slate-400 mt-2">
-            In Paul Ekman's studies, recognizing sub-second micro-expressions correlates directly with high affective empathy and deception detection.
-          </p>
-        </div>
-
-        <div class="flex gap-3 justify-center">
-          <button onclick="Games.initMicroExpressions()" class="px-5 py-2.5 rounded-xl bg-museum-950 border border-slate-800 text-slate-200 text-xs font-semibold hover:border-slate-700 transition">
-            Test Again
+        <div class="flex gap-4 justify-center">
+          <button onclick="Games.runMontyBatch(10)" class="px-5 py-2.5 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 text-blue-300 text-xs font-mono font-bold transition">
+            Simulate 10 Trials
           </button>
-          <button onclick="Games.submitScore('micro-expressions', ${this.microScore}, null, Math.round((this.microScore/1000)*100))" class="px-6 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-museum-950 font-bold text-xs transition shadow-lg shadow-rose-500/20">
-            Archive to Visitor Pass
+          <button onclick="Games.runMontyBatch(100)" class="px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 text-xs font-mono font-bold transition">
+            Simulate 100 Trials
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+          <div class="p-4 rounded-xl bg-museum-950 border border-slate-800">
+            <span class="text-xs font-mono text-slate-400 block mb-1">Switching Strategy</span>
+            <div id="simSwitchRate" class="font-display font-bold text-2xl text-emerald-400">66.7%</div>
+            <span id="simSwitchWins" class="text-[11px] font-mono text-slate-500">Wins: 0</span>
+          </div>
+          <div class="p-4 rounded-xl bg-museum-950 border border-slate-800">
+            <span class="text-xs font-mono text-slate-400 block mb-1">Staying Strategy</span>
+            <div id="simStayRate" class="font-display font-bold text-2xl text-rose-400">33.3%</div>
+            <span id="simStayWins" class="text-[11px] font-mono text-slate-500">Wins: 0</span>
+          </div>
+        </div>
+
+        <div class="flex justify-center">
+          <button onclick="Games.submitScore('monty-hall', 67, null, 100)" class="px-6 py-2.5 rounded-xl bg-blue-500 text-white font-bold text-xs">
+            Archive Probability Metric to Pass
           </button>
         </div>
       </div>
@@ -648,14 +741,36 @@ const Games = {
     if (window.lucide) lucide.createIcons();
   },
 
+  runMontyBatch(count) {
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
+    for (let i = 0; i < count; i++) {
+      const car = Math.floor(Math.random() * 3);
+      const pick = Math.floor(Math.random() * 3);
+      if (car === pick) {
+        this.montySim.stayWins++;
+      } else {
+        this.montySim.switchWins++;
+      }
+      this.montySim.trials++;
+    }
+
+    const switchPct = Math.round((this.montySim.switchWins / this.montySim.trials) * 100);
+    const stayPct = Math.round((this.montySim.stayWins / this.montySim.trials) * 100);
+
+    document.getElementById('simSwitchRate').textContent = `${switchPct}%`;
+    document.getElementById('simStayRate').textContent = `${stayPct}%`;
+    document.getElementById('simSwitchWins').textContent = `Wins: ${this.montySim.switchWins} / ${this.montySim.trials}`;
+    document.getElementById('simStayWins').textContent = `Wins: ${this.montySim.stayWins} / ${this.montySim.trials}`;
+  },
+
+  /* Score submission & Leaderboard */
   getLocalScores() {
     return JSON.parse(localStorage.getItem('hmm_my_scores') || '[]');
   },
 
   async submitScore(gameId, score, rt, acc) {
-    AudioAmbiance.playSfx('click');
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
 
-    // Auto-create guest pass if user not signed in
     if (!Auth.isLoggedIn()) {
       Auth.generateGuestPass();
     }
@@ -672,69 +787,19 @@ const Games = {
       timestamp: new Date().toISOString()
     };
 
-    // Save to local scores
     const myScores = this.getLocalScores();
     myScores.push(scoreRecord);
     localStorage.setItem('hmm_my_scores', JSON.stringify(myScores));
 
-    // Save to local leaderboard
     const leaderboard = JSON.parse(localStorage.getItem('hmm_leaderboard') || '[]');
     leaderboard.push(scoreRecord);
     localStorage.setItem('hmm_leaderboard', JSON.stringify(leaderboard));
 
-    // Award badges
-    let user = Auth.currentUser;
-    let newBadges = [];
-    if (user) {
-      const currentBadges = user.badges || [];
-      if (gameId === 'stroop' && score >= 1200 && !currentBadges.includes('Neural Overdrive')) {
-        currentBadges.push('Neural Overdrive');
-        newBadges.push('Neural Overdrive');
-      }
-      if (gameId === 'memory-matrix' && score >= 5 && !currentBadges.includes('Hippocampal Prodigy')) {
-        currentBadges.push('Hippocampal Prodigy');
-        newBadges.push('Hippocampal Prodigy');
-      }
-      if (gameId === 'bias-detective' && score >= 500 && !currentBadges.includes('Bias Hunter')) {
-        currentBadges.push('Bias Hunter');
-        newBadges.push('Bias Hunter');
-      }
-      if (gameId === 'micro-expressions' && score >= 500 && !currentBadges.includes('Affective Empath')) {
-        currentBadges.push('Affective Empath');
-        newBadges.push('Affective Empath');
-      }
-
-      if (myScores.length >= 3 && user.visitorLevel === 'Novice Explorer') {
-        user.visitorLevel = 'Cognitive Apprentice';
-      }
-      if (myScores.length >= 6) {
-        user.visitorLevel = 'Senior Neuro-Investigator';
-      }
-
-      user.badges = currentBadges;
-      localStorage.setItem(Auth.userKey, JSON.stringify(user));
-      Auth.renderHeader();
-    }
-
-    // Try server sync
-    const token = Auth.getToken();
-    if (token) {
-      fetch('/api/games/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ gameId, score, reactionTimeMs: rt, accuracy: acc })
-      }).catch(() => {});
-    }
-
-    AudioAmbiance.playSfx('badge');
-    App.showToast(`Neural score archived to your pass! (${score} pts)`);
-    if (newBadges.length > 0) {
-      setTimeout(() => App.showToast(`🏆 Medal Unlocked: ${newBadges[0]}!`), 1000);
-    }
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('badge');
+    if (window.App) App.showToast(`Neural score archived to your pass! (${score} pts)`);
   },
 
   async showLeaderboardModal() {
-    AudioAmbiance.playSfx('click');
     const modal = document.getElementById('leaderboardModal');
     const container = document.getElementById('leaderboardRowsContainer');
     if (!modal || !container) return;
@@ -748,7 +813,6 @@ const Games = {
     } catch (e) {}
 
     if (!scores || scores.length === 0) {
-      // Default curated leaderboard + user's local scores
       const defaultScores = [
         { username: "Dr. Vance", gameId: "stroop", score: 1850, reactionTimeMs: 420 },
         { username: "Dr. Vance", gameId: "bias-detective", score: 950 },
@@ -762,7 +826,7 @@ const Games = {
     container.innerHTML = scores.map((s, i) => `
       <div class="p-3 rounded-xl bg-museum-950 border border-slate-800 flex items-center justify-between text-xs">
         <div class="flex items-center space-x-3">
-          <span class="w-6 h-6 rounded-full ${i === 0 ? 'bg-amber-400 text-museum-950 font-bold' : (i === 1 ? 'bg-slate-300 text-museum-950 font-bold' : (i === 2 ? 'bg-amber-700 text-white font-bold' : 'text-slate-500 font-mono'))} flex items-center justify-center text-[10px]">
+          <span class="w-6 h-6 rounded-full font-bold text-[10px] flex items-center justify-center ${i === 0 ? 'bg-amber-400 text-museum-950' : 'bg-slate-800 text-slate-400'}">
             ${i + 1}
           </span>
           <div>
@@ -772,7 +836,6 @@ const Games = {
         </div>
         <div class="text-right">
           <div class="font-mono font-bold text-amber-300">${s.score} pts</div>
-          ${s.reactionTimeMs ? `<div class="font-mono text-[10px] text-slate-500">${s.reactionTimeMs}ms</div>` : ''}
         </div>
       </div>
     `).join('');

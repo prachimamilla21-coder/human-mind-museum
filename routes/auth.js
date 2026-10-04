@@ -70,6 +70,7 @@ router.post('/register', async (req, res) => {
       visitorLevel: 'Novice Explorer',
       joinDate: new Date().toISOString(),
       visitedRooms: [],
+      quizResults: {},
       badges: ['First Step: Museum Admission']
     };
 
@@ -154,6 +155,7 @@ router.post('/guest', async (req, res) => {
       visitorLevel: 'Guest Scholar',
       joinDate: new Date().toISOString(),
       visitedRooms: [],
+      quizResults: {},
       badges: ['Guest Access Pass']
     };
 
@@ -179,7 +181,6 @@ router.get('/me', authenticateToken, (req, res) => {
   try {
     let user = db.findUserById(req.user.id);
     if (!user) {
-      // If it was a dynamic guest token
       if (req.user.role === 'guest') {
         return res.json({
           user: {
@@ -189,7 +190,8 @@ router.get('/me', authenticateToken, (req, res) => {
             visitorBadgeId: req.user.badgeId,
             visitorLevel: 'Guest Scholar',
             badges: ['Guest Access Pass'],
-            visitedRooms: []
+            visitedRooms: [],
+            quizResults: {}
           },
           scores: db.getUserScores(req.user.id),
           journals: db.getUserJournal(req.user.id)
@@ -215,7 +217,7 @@ router.get('/me', authenticateToken, (req, res) => {
   }
 });
 
-// Update visited rooms or badges
+// Update visited rooms
 router.post('/record-visit', authenticateToken, (req, res) => {
   try {
     const { roomId } = req.body;
@@ -227,15 +229,61 @@ router.post('/record-visit', authenticateToken, (req, res) => {
       if (!visited.includes(roomId)) {
         visited.push(roomId);
         let badges = user.badges || [];
-        if (visited.length >= 5 && !badges.includes('Omniscient Mind: All Wings Explored')) {
-          badges.push('Omniscient Mind: All Wings Explored');
+        if (visited.length >= 7 && !badges.includes('Grand Scholar: All 7 Rooms Explored')) {
+          badges.push('Grand Scholar: All 7 Rooms Explored');
         }
-        db.updateUser(user.id, { visitedRooms: visited, badges });
+        let level = user.visitorLevel || 'Novice Explorer';
+        if (visited.length >= 3 && level === 'Novice Explorer') {
+          level = 'Cognitive Apprentice';
+        }
+        if (visited.length >= 7 && (level === 'Cognitive Apprentice' || level === 'Novice Explorer')) {
+          level = 'Senior Neuro-Investigator';
+        }
+        db.updateUser(user.id, { visitedRooms: visited, badges, visitorLevel: level });
       }
     }
     res.json({ success: true, roomId });
   } catch (err) {
     res.status(500).json({ error: 'Failed to record visit.' });
+  }
+});
+
+// Record quiz completion
+router.post('/record-quiz', authenticateToken, (req, res) => {
+  try {
+    const { roomId, score, total } = req.body;
+    if (!roomId || score === undefined) return res.status(400).json({ error: 'Room ID and score required.' });
+
+    let user = db.findUserById(req.user.id);
+    if (user) {
+      const quizResults = user.quizResults || {};
+      quizResults[roomId] = { score, total, date: new Date().toISOString() };
+      let badges = user.badges || [];
+      
+      const badgeMap = {
+        memory: 'Memory Architect',
+        emotion: 'Empathy Master',
+        perception: 'Illusion Breaker',
+        personality: 'OCEAN Pioneer',
+        'cognitive-bias': 'Bias Hunter',
+        'decision-making': 'Strategic Thinker',
+        'brain-lab': 'Neuro Scholar'
+      };
+
+      if (badgeMap[roomId] && !badges.includes(badgeMap[roomId])) {
+        badges.push(badgeMap[roomId]);
+      }
+
+      if (Object.keys(quizResults).length >= 7 && !badges.includes('Master of Mind')) {
+        badges.push('Master of Mind');
+      }
+
+      db.updateUser(user.id, { quizResults, badges });
+      return res.json({ success: true, quizResults, badges });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to record quiz.' });
   }
 });
 

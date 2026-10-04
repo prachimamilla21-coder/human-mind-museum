@@ -1,18 +1,20 @@
-// AI Museum Docent Controller: Dr. Sophia Vance (Universal Hybrid Cognitive Engine)
+// AI Museum Docent Controller: Dr. Sophia Vance (All 7 Educational Rooms Knowledge Engine)
 const AIGuide = {
   isVoiceActive: false,
   messages: [
     {
       sender: "Dr. Sophia Vance",
       role: "assistant",
-      content: "Welcome to my Consultation Salon. I am Dr. Sophia Vance, Chief Neuro-Curator. Within these walls, we unravel how 86 billion neurons construct your perception, emotion, and identity. What mystery shall we explore together?"
+      content: "Welcome to my Consultation Salon. I am Dr. Sophia Vance, your AI guide. Within these walls, we unravel how 86 billion neurons construct your memory, emotions, perception, personality, and decision-making across our seven educational rooms. What psychological phenomenon shall we explore together?"
     }
   ],
   suggestions: [
-    "Does Mary learn anything new when she sees color?",
-    "Why does memory change every time we recall it?",
-    "What is the evolutionary function of fear?",
-    "Explain Kahneman's System 1 and System 2."
+    "Why does memory rewrite itself when recalled?",
+    "Explain Plutchik's Wheel of Emotions",
+    "How does the Stroop Effect test cognitive control?",
+    "What is the Big Five OCEAN model?",
+    "Why should you always switch doors in Monty Hall?",
+    "What did Phineas Gage teach neuroscience?"
   ],
 
   init() {
@@ -34,14 +36,14 @@ const AIGuide = {
 
         <div class="max-w-[85%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed ${
           m.role === 'user'
-            ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white chat-bubble-user'
-            : 'bg-museum-950 border border-slate-800 text-slate-200 chat-bubble-assistant shadow-lg'
+            ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white'
+            : 'bg-museum-950 border border-slate-800 text-slate-200 shadow-lg'
         }">
           ${m.role !== 'user' ? `
             <div class="flex items-center space-x-2 mb-1.5 font-mono text-[10px] text-purple-400">
               <span class="font-bold">DR. SOPHIA VANCE</span>
               <span>&bull;</span>
-              <span>CHIEF NEURO-CURATOR</span>
+              <span>AI GUIDE & NEURO-CURATOR</span>
             </div>
           ` : ''}
           <p class="whitespace-pre-line">${m.content}</p>
@@ -79,166 +81,126 @@ const AIGuide = {
     await this.sendDirectPrompt(query);
   },
 
-  // Client-Side Cognitive Psychology Reasoning Engine
-  generateDocentResponse(query) {
-    const msg = query.toLowerCase();
+  async sendDirectPrompt(query) {
+    if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
 
-    if (msg.includes("consciousness") || msg.includes("perception") || msg.includes("illusion") || msg.includes("qualia") || msg.includes("color")) {
-      return `Ah, you are probing consciousness—the supreme mystery of cognitive neuroscience! What fascinates me most is that your brain is encased in total darkness within your skull, yet it fabricates this vibrant, colorful 3D reality. Have you explored the optical illusions in Wing I? They demonstrate that what you perceive is not objective light, but your brain's top-down predictive hypothesis about what caused that light.`;
-    }
-
-    if (msg.includes("emotion") || msg.includes("feeling") || msg.includes("fear") || msg.includes("anxiety") || msg.includes("love") || msg.includes("anger")) {
-      return `Emotions are ancient navigational heuristics. As Lisa Feldman Barrett proved in her theory of constructed emotion, an emotion is your brain's prediction of what bodily sensations (heart rate, cortisol, breath) mean in a given context. In Wing II, interact with Plutchik's Emotion Wheel: notice how Fear plus Surprise becomes Awe. Try our 4-7-8 Vagus Breathing Pacer right now to physically recalibrate your autonomic nervous system.`;
-    }
-
-    if (msg.includes("memory") || msg.includes("forget") || msg.includes("remember") || msg.includes("past") || msg.includes("nostalgia")) {
-      return `Memory is one of our most haunting exhibits. Most people believe memories are frozen video files, but neurobiologically, remembering is a reconstructive act. When you recall an event, neurochemical synapses unlock during 'reconsolidation'. If someone suggests a misleading detail, your hippocampus blends it into the story. Visit Wing III to test our False Memory simulator—it will astonish you how easily phantom recollections are created!`;
-    }
-
-    if (msg.includes("decision") || msg.includes("bias") || msg.includes("trolley") || msg.includes("rational") || msg.includes("kahneman")) {
-      return `Decision-making is the eternal tug-of-war between Daniel Kahneman's System 1 (instinctive, fast, and heavily biased) and System 2 (meticulous, slow, and mentally exhausting). In our Decision Chamber (Wing IV), test your susceptibility to the Sunk Cost Fallacy and Anchoring Bias. For instance, did you know an arbitrary high number can anchor subsequent valuations by up to 50%?`;
-    }
-
-    if (msg.includes("identity") || msg.includes("ego") || msg.includes("who am i") || msg.includes("self") || msg.includes("jung") || msg.includes("shadow")) {
-      return `Who is the 'You' that is asking this question? Carl Jung posited that we all construct a 'Persona'—the social facade we present to society—while banishing unacceptable impulses into 'The Shadow'. Furthermore, Nobel laureate Roger Sperry's split-brain patients demonstrated that when the corpus callosum is cut, two separate consciousnesses awaken in one head! Visit Wing V to take the Jungian Archetype test and confront your reflection.`;
-    }
-
-    if (msg.includes("tour") || msg.includes("guide me") || msg.includes("where should i go") || msg.includes("recommend")) {
-      return `I would be thrilled to guide your path! If you want an eye-opening journey, start with Wing I (Perception), move to Wing II (Emotions), and then test your skills in the Cognitive Testing Chamber with the Stroop Effect and Bias Detective games! Which realm of the mind would you like to explore first?`;
-    }
-
-    if (msg.includes("game") || msg.includes("test") || msg.includes("challenge") || msg.includes("play")) {
-      return `Looking to test your neural circuitry? Head over to the Cognitive Games tab to try:
-1. The Stroop Effect Challenge (evaluates frontal lobe inhibitory control)
-2. The Working Memory Matrix (tests spatial span and Miller's 7±2 Law)
-3. The Cognitive Bias Detective (challenges you to diagnose fallacy traps)
-4. Micro-Expression Decoder (measures high-speed facial empathy recognition)
-All results are dynamically scored and stamped directly onto your Holographic Visitor Pass!`;
-    }
-
-    if (msg.includes("hello") || msg.includes("hi") || msg.includes("hey")) {
-      return `Greetings, esteemed explorer! I am Dr. Sophia Vance. How can I illuminate your journey through The Human Mind Museum today? You can ask me to explain any psychological experiment, request a guided tour, or ask about your own cognitive patterns.`;
-    }
-
-    return `That touches on a profound question in human psychology. In our museum, we seek to understand how the biological machinery of 86 billion neurons generates subjective meaning, purposeful action, and social bonds. As you explore the 5 wings, remember: the mind is both the observer and the observed. Is there a specific exhibit, cognitive bias, or paradox you'd like to explore in depth?`;
-  },
-
-  async sendDirectPrompt(promptText) {
-    AudioAmbiance.playSfx('click');
-
-    // Add user message
-    this.messages.push({
-      sender: "Visitor",
-      role: "user",
-      content: promptText
-    });
+    this.messages.push({ role: 'user', content: query });
     this.renderMessages();
 
-    // Show typing state
+    // Show typing status
     const stream = document.getElementById('aiChatStream');
-    const typingIndicator = document.createElement('div');
-    typingIndicator.id = 'aiTypingIndicator';
-    typingIndicator.className = 'flex items-center space-x-2 text-xs font-mono text-purple-400 p-2';
-    typingIndicator.innerHTML = `
-      <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
-      <span>Dr. Vance is consulting neural archives...</span>
-    `;
-    stream.appendChild(typingIndicator);
-    stream.scrollTop = stream.scrollHeight;
+    const typingId = `typing_${Date.now()}`;
+    if (stream) {
+      stream.innerHTML += `
+        <div id="${typingId}" class="flex items-center space-x-2 text-xs text-purple-400 font-mono p-3">
+          <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+          <span>Dr. Sophia is synthesizing psychological insights...</span>
+        </div>
+      `;
+      stream.scrollTop = stream.scrollHeight;
+    }
 
-    let replyText = null;
-
+    let reply = '';
     try {
       const res = await fetch('/api/ai-guide/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: promptText,
-          currentRoom: Wings.activeWingId,
-          userProfile: Auth.currentUser
-        })
+        body: JSON.stringify({ message: query, currentRoom: Wings.activeWingId })
       });
-
       if (res.ok) {
         const data = await res.json();
-        replyText = data.reply;
-        if (data.suggestions) this.suggestions = data.suggestions;
+        reply = data.reply;
+        if (data.suggestions && data.suggestions.length) {
+          this.suggestions = data.suggestions;
+          this.renderSuggestions();
+        }
+      } else {
+        throw new Error('Fallback to local intelligence');
       }
     } catch (err) {
-      // Fall through to client engine
+      reply = this.generateDocentResponse(query);
     }
 
-    // If server didn't answer (e.g. on GitHub Pages), use client-side cognitive engine
-    if (!replyText) {
-      await new Promise(r => setTimeout(r, 400)); // natural typing delay
-      replyText = this.generateDocentResponse(promptText);
-      this.suggestions = [
-        "Can we actually trust our own memories?",
-        "Why does my brain fall for optical illusions?",
-        "How does the Stroop Effect test cognitive control?",
-        "Give me the 3-Minute Miracle Tour."
-      ].sort(() => 0.5 - Math.random()).slice(0, 3);
-    }
-
-    const indicator = document.getElementById('aiTypingIndicator');
-    if (indicator) indicator.remove();
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
 
     this.messages.push({
       sender: "Dr. Sophia Vance",
       role: "assistant",
-      content: replyText
+      content: reply
     });
-    this.renderSuggestions();
     this.renderMessages();
 
-    // Speak aloud if voice toggle active
-    if (this.isVoiceActive) {
-      this.speak(replyText);
+    if (this.isVoiceActive && window.AudioAmbiance) {
+      AudioAmbiance.speak(reply);
     }
   },
 
-  async requestTour(tourId) {
-    AudioAmbiance.playSfx('click');
-    App.navigateTo('ai-guide');
+  generateDocentResponse(query) {
+    const msg = query.toLowerCase();
 
-    const tourPrompts = {
-      'tour-speed': "Dr. Vance, please guide me on the 3-Minute Miracle Tour of the Mind.",
-      'tour-shadow': "Dr. Vance, please conduct a guided exploration of the Subconscious and Jungian Shadow.",
-      'tour-biases': "Dr. Vance, lead me through the Rationality Bootcamp Tour across cognitive biases."
-    };
+    // Room 1: Memory
+    if (msg.includes("memory") || msg.includes("forget") || msg.includes("remember") || msg.includes("working memory") || msg.includes("amnesia")) {
+      return `In Room 1 (The Memory Room), we deconstruct the myth that memory is a permanent recording. Working memory holds roughly 4 to 7 items for seconds before requiring active rehearsal. Furthermore, Elizabeth Loftus proved memories are reconstructive: every act of remembering alters the neural trace! Have you tried our Working Memory Matrix game in the Arcade?`;
+    }
 
-    const prompt = tourPrompts[tourId] || "Dr. Vance, please recommend a tour of the museum.";
-    await this.sendDirectPrompt(prompt);
+    // Room 2: Emotion
+    if (msg.includes("emotion") || msg.includes("feeling") || msg.includes("fear") || msg.includes("plutchik") || msg.includes("ekman") || msg.includes("expression") || msg.includes("eq")) {
+      return `In Room 2 (The Emotion Room), Robert Plutchik's Wheel shows how 8 primary emotions combine like colors—Joy and Trust blend to form Love; Fear and Surprise yield Awe. Paul Ekman discovered that 6 micro-expressions flash involuntarily in less than a fifth of a second across every human culture. Try our 4-7-8 Vagus Breathing Pacer in Room 2 to down-regulate your stress response!`;
+    }
+
+    // Room 3: Perception
+    if (msg.includes("perception") || msg.includes("illusion") || msg.includes("optical") || msg.includes("stroop") || msg.includes("color") || msg.includes("see")) {
+      return `In Room 3 (The Perception Room), we explore how your visual cortex synthesizes a top-down controlled hallucination from ambiguous sensory cues. Optical illusions like the Müller-Lyer and Hermann Grid reveal the computational shortcuts your brain uses to interpret depth and contrast. Test yourself in the Stroop Effect game to measure cognitive interference between automatic reading and deliberate color naming!`;
+    }
+
+    // Room 4: Personality
+    if (msg.includes("personality") || msg.includes("ocean") || msg.includes("big five") || msg.includes("mbti") || msg.includes("jung") || msg.includes("traits")) {
+      return `In Room 4 (The Personality Room), we look at the empirically validated Big Five (OCEAN) traits: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism. Unlike the popular but scientifically flawed MBTI categories, Big Five traits are distributed along continuous bell curves. Take our interactive OCEAN assessment to view your personalized Holographic Radar Chart!`;
+    }
+
+    // Room 5: Cognitive Bias
+    if (msg.includes("bias") || msg.includes("heuristic") || msg.includes("confirmation") || msg.includes("anchoring") || msg.includes("sunk cost") || msg.includes("fallacy")) {
+      return `In Room 5 (The Cognitive Bias Room), we confront the heuristics of System 1 thinking discovered by Daniel Kahneman and Amos Tversky. Confirmation bias compels us to only seek evidence confirming what we already believe, while anchoring unconsciously pulls our estimates toward arbitrary initial numbers. Check out Peter Wason's 2-4-6 game in Room 5 to test your own hypothesis testing!`;
+    }
+
+    // Room 6: Decision-Making
+    if (msg.includes("decision") || msg.includes("monty hall") || msg.includes("risk") || msg.includes("trolley") || msg.includes("prospect theory")) {
+      return `In Room 6 (The Decision-Making Room), human intuition clashes with mathematical reality. In the Monty Hall 3-Door paradox, switching doors doubles your win probability from 33.3% to 66.7%! And Prospect Theory demonstrates that losses loom twice as large as equivalent gains. Step into Room 6 to run the live Monty Hall simulator!`;
+    }
+
+    // Room 7: Brain Lab
+    if (msg.includes("brain") || msg.includes("neuroscience") || msg.includes("neuron") || msg.includes("plasticity") || msg.includes("phineas gage")) {
+      return `Welcome to Room 7 (The Brain Lab)! Inside your skull reside 86 billion neurons forming trillions of synaptic connections. From Phineas Gage's frontal lobe injury showing where social personality resides, to synaptic neuroplasticity allowing you to rewire your cognitive circuits throughout your life, neuroscience is the ultimate self-portrait. What specific neural concept would you like to explore?`;
+    }
+
+    return `That touches on a fascinating area of psychological science. Across our seven educational rooms—Memory, Emotion, Perception, Personality, Cognitive Bias, Decision-Making, and the Brain Lab—we investigate how neural architecture gives rise to human consciousness and behavior. Which specific room or experiment would you like to explore deeper?`;
   },
 
   toggleVoice() {
     this.isVoiceActive = !this.isVoiceActive;
     const btn = document.getElementById('ttsVoiceToggleBtn');
+    const icon = document.getElementById('ttsIcon');
+    if (!btn) return;
 
     if (this.isVoiceActive) {
-      if (btn) btn.className = 'p-2.5 rounded-xl bg-purple-600/20 border border-purple-500 text-purple-300 transition';
-      App.showToast('AI Voice Speech Synthesizer: Enabled');
-      this.speak("Voice synthesizer engaged. I am ready to converse.");
+      btn.classList.add('bg-purple-500/20', 'text-purple-300', 'border-purple-500/50');
+      if (window.App) App.showToast('AI Voice Speech Synthesizer: Enabled');
+      AudioAmbiance.speak("Voice output enabled. I am listening.");
     } else {
-      if (btn) btn.className = 'p-2.5 rounded-xl bg-museum-900 border border-slate-800 text-slate-400 hover:text-purple-400 transition';
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      App.showToast('AI Voice Speech Synthesizer: Disabled');
+      btn.classList.remove('bg-purple-500/20', 'text-purple-300', 'border-purple-500/50');
+      if (window.App) App.showToast('AI Voice Speech Synthesizer: Disabled');
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
     }
   },
 
-  speak(text) {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-
-    const cleanText = text.replace(/[*_#`]/g, '');
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.05;
-
-    const voices = window.speechSynthesis.getVoices();
-    const naturalVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
-    if (naturalVoice) utterance.voice = naturalVoice;
-
-    window.speechSynthesis.speak(utterance);
+  requestTour(tourId) {
+    if (tourId === 'tour-speed') {
+      this.sendDirectPrompt("Give me the Core 7-Room Grand Expedition tour!");
+    } else if (tourId === 'tour-shadow') {
+      this.sendDirectPrompt("Guide me through the Emotion, Personality, and Shadow rooms.");
+    } else if (tourId === 'tour-biases') {
+      this.sendDirectPrompt("Take me to the Cognitive Bias and Decision-Making rooms.");
+    }
   }
 };
