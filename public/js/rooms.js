@@ -843,7 +843,7 @@ const Wings = {
 
     this.renderHomeWings();
     this.renderTabs();
-    this.selectWing(this.activeWingId);
+    this.renderActiveWing(this.activeWingId);
   },
 
   renderHomeWings() {
