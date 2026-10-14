@@ -200,3 +200,10 @@ const Journal = {
     this.fetchEntries();
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.Journal = Journal;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = Journal;
+}

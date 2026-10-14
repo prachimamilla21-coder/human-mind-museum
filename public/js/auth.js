@@ -415,3 +415,10 @@ const Auth = {
     App.showToast('Visitor session ended. Pass archived.');
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.Auth = Auth;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = Auth;
+}

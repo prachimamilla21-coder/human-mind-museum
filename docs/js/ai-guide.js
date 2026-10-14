@@ -204,3 +204,10 @@ const AIGuide = {
     }
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.AIGuide = AIGuide;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = AIGuide;
+}

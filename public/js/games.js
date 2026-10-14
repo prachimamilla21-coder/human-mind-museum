@@ -848,3 +848,10 @@ const Games = {
     if (modal) modal.classList.add('hidden');
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.Games = Games;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = Games;
+}

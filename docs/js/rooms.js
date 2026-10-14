@@ -912,21 +912,30 @@ const Wings = {
   },
 
   selectWing(wingId) {
-    if (window.AudioAmbiance) AudioAmbiance.playSfx('click');
+    if (window.AudioAmbiance && AudioAmbiance.playSfx) AudioAmbiance.playSfx('click');
     this.activeWingId = wingId;
     this.activeSectionIndex = 0;
     
-    // Switch to rooms view if not active
-    if (window.App && App.currentView !== 'wings') {
-      App.navigateTo('wings');
+    // Switch to rooms view
+    const app = window.App || (typeof App !== 'undefined' ? App : null);
+    if (app && typeof app.navigateTo === 'function') {
+      app.navigateTo('wings');
+    } else {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      const target = document.getElementById('view-wings');
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
     this.renderTabs();
     this.renderActiveWing(wingId);
 
     // Record visit on pass
-    if (window.Auth && Auth.recordRoomVisit) {
-      Auth.recordRoomVisit(wingId);
+    const auth = window.Auth || (typeof Auth !== 'undefined' ? Auth : null);
+    if (auth && auth.recordRoomVisit) {
+      auth.recordRoomVisit(wingId);
     }
   },
 
@@ -1120,8 +1129,15 @@ const Wings = {
   },
 
   scrollToQuiz(roomId) {
-    const el = document.getElementById('roomQuizSection');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (this.activeWingId !== roomId) {
+      this.selectWing(roomId);
+    }
+    setTimeout(() => {
+      const el = document.getElementById('roomQuizSection');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 200);
   },
 
   renderQuiz(room) {

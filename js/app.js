@@ -3,6 +3,17 @@ const App = {
   currentView: 'home',
 
   init() {
+    if (typeof window !== 'undefined') {
+      window.App = this;
+    }
+
+    // Initialize subsystems
+    if (typeof Auth !== 'undefined' && Auth.init) Auth.init();
+    if (typeof Wings !== 'undefined' && Wings.init) Wings.init();
+    if (typeof Games !== 'undefined' && Games.init) Games.init();
+    if (typeof AIGuide !== 'undefined' && AIGuide.init) AIGuide.init();
+    if (typeof Journal !== 'undefined' && Journal.init) Journal.init();
+
     // Hash routing listener
     window.addEventListener('hashchange', () => {
       const hash = window.location.hash.replace('#', '') || 'home';
@@ -12,13 +23,6 @@ const App = {
     // Check initial hash
     const initialHash = window.location.hash.replace('#', '') || 'home';
     this.navigateTo(initialHash, false);
-
-    // Initialize subsystems
-    Auth.init();
-    Wings.init();
-    Games.init();
-    AIGuide.init();
-    Journal.init();
 
     if (window.lucide) lucide.createIcons();
   },
@@ -49,6 +53,14 @@ const App = {
         btn.className = 'nav-btn px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition text-slate-300 hover:text-white hover:bg-slate-800/50 flex items-center space-x-2';
       }
     });
+
+    if (viewId === 'wings') {
+      const wings = window.Wings || (typeof Wings !== 'undefined' ? Wings : null);
+      if (wings) {
+        wings.renderTabs();
+        wings.renderActiveWing(wings.activeWingId || 'memory');
+      }
+    }
 
     if (viewId === 'dashboard') {
       this.renderDashboard();
@@ -344,6 +356,13 @@ const App = {
     if (modal) modal.classList.add('hidden');
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.App = App;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = App;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   App.init();

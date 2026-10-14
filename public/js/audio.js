@@ -163,3 +163,10 @@ class MuseumAudioEngine {
 }
 
 const AudioAmbiance = new MuseumAudioEngine();
+
+if (typeof window !== 'undefined') {
+  window.AudioAmbiance = AudioAmbiance;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = AudioAmbiance;
+}
