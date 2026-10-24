@@ -1,0 +1,15 @@
+# The Human Mind Museum - Apache .htaccess for XAMPP
+RewriteEngine On
+RewriteBase /
+
+# Route API requests to router.php
+RewriteCond %{REQUEST_URI} ^.*/api/.*$
+RewriteRule ^.*$ backend_php/router.php [QSA,L]
+
+# Serve existing files directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Single Page App fallback: route frontend navigation to index.html
+RewriteRule ^ index.html [L]

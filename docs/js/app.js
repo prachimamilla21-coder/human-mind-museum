@@ -165,6 +165,10 @@ const App = {
               <i data-lucide="id-card" class="w-4 h-4 text-cyan-400"></i>
               <span>Digital Pass</span>
             </button>
+            <button onclick="App.openDatabaseViewer()" class="px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/40 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono flex items-center space-x-2 transition">
+              <i data-lucide="database" class="w-4 h-4 text-cyan-400"></i>
+              <span>Database Activity</span>
+            </button>
           </div>
         </div>
       </div>
@@ -353,6 +357,127 @@ const App = {
 
   closeCertificateModal() {
     const modal = document.getElementById('certificateModal');
+    if (modal) modal.classList.add('hidden');
+  },
+
+  async openDatabaseViewer() {
+    if (window.AudioAmbiance && AudioAmbiance.playSfx) AudioAmbiance.playSfx('click');
+    const modal = document.getElementById('databaseModal');
+    const body = document.getElementById('databaseModalBody');
+    if (!modal || !body) return;
+
+    modal.classList.remove('hidden');
+    body.innerHTML = `
+      <div class="text-center py-12">
+        <i data-lucide="loader-2" class="w-8 h-8 text-cyan-400 animate-spin mx-auto mb-3"></i>
+        <p class="text-xs font-mono text-slate-400">Querying central museum database records...</p>
+      </div>
+    `;
+    if (window.lucide) lucide.createIcons();
+
+    let data = null;
+
+    try {
+      const res = await fetch('/api/auth/visitors');
+      if (res.ok) {
+        data = await res.json();
+      }
+    } catch (e) {
+      // offline / static fallback
+    }
+
+    if (!data || !data.visitors) {
+      const users = JSON.parse(localStorage.getItem('mind_museum_users') || '[]');
+      const currentUser = (window.Auth && Auth.currentUser) ? Auth.currentUser : null;
+      if (currentUser && !users.find(u => u.id === currentUser.id)) {
+        users.unshift(currentUser);
+      }
+      data = {
+        database: 'Browser Storage Engine (HTML5 localStorage)',
+        totalVisitors: users.length,
+        visitors: users,
+        totalGameScores: (window.Games && Games.getLocalScores) ? Games.getLocalScores().length : 0,
+        totalJournalEntries: 0
+      };
+    }
+
+    const visitors = data.visitors || [];
+
+    body.innerHTML = `
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="p-4 rounded-2xl bg-museum-950 border border-slate-800">
+          <span class="text-[10px] font-mono uppercase text-slate-500 block mb-1">Total Visitors</span>
+          <span class="font-display font-bold text-2xl text-cyan-400">${data.totalVisitors || visitors.length}</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-museum-950 border border-slate-800">
+          <span class="text-[10px] font-mono uppercase text-slate-500 block mb-1">Arcade Scores</span>
+          <span class="font-display font-bold text-purple-400">${data.totalGameScores || 0}</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-museum-950 border border-slate-800">
+          <span class="text-[10px] font-mono uppercase text-slate-500 block mb-1">Journal Reflections</span>
+          <span class="font-display font-bold text-emerald-400">${data.totalJournalEntries || 0}</span>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-cyan-500/5 border border-cyan-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div class="flex items-center space-x-3">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-xs font-mono text-cyan-200">Database: <strong>${data.database || 'data/museum.json (File-based JSON Document Store)'}</strong></span>
+        </div>
+        <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-400">JWT & bcrypt Active</span>
+      </div>
+
+      <div>
+        <h4 class="font-display font-bold text-base text-white mb-3 flex items-center space-x-2">
+          <i data-lucide="users" class="w-4 h-4 text-cyan-400"></i>
+          <span>Registered Visitors & Activity Records</span>
+        </h4>
+
+        <div class="space-y-3">
+          ${visitors.map(v => {
+            const visited = v.visitedRooms || [];
+            const quizzes = v.quizResults || {};
+            const quizCount = Object.keys(quizzes).length;
+            return `
+              <div class="p-4 rounded-2xl bg-museum-950/80 border border-slate-800 hover:border-slate-700 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center font-bold text-sm text-museum-950">
+                      ${(v.username || 'V').charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <div class="flex items-center space-x-2">
+                        <span class="font-bold text-sm text-white">${v.username}</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold">${v.visitorBadgeId || 'HMM-VIS'}</span>
+                        ${v.role === 'curator' ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold">Curator</span>' : ''}
+                      </div>
+                      <span class="text-[11px] text-slate-400">${v.email || 'Visitor'} &bull; ${v.visitorLevel || 'Novice'}</span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-500">Joined: ${new Date(v.joinDate || Date.now()).toLocaleDateString()}</span>
+                </div>
+
+                <div class="text-xs font-mono text-slate-400 mb-2">
+                  <span class="text-cyan-400 font-bold">Rooms Explored (${visited.length}/7):</span>
+                  ${visited.length ? visited.map(r => `<span class="inline-block px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 mr-1 mt-1 capitalize">${r}</span>`).join('') : '<span class="text-slate-600 text-[11px] ml-1">None yet</span>'}
+                </div>
+
+                <div class="text-xs font-mono text-slate-400">
+                  <span class="text-amber-400 font-bold">Quizzes Completed (${quizCount}/7):</span>
+                  ${quizCount ? Object.entries(quizzes).map(([r, q]) => `<span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px] mr-1 mt-1 capitalize">${r}: ${q.score}/${q.total}</span>`).join('') : '<span class="text-slate-600 text-[11px] ml-1">No quizzes attempted</span>'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+
+    if (window.lucide) lucide.createIcons();
+  },
+
+  closeDatabaseViewer() {
+    const modal = document.getElementById('databaseModal');
     if (modal) modal.classList.add('hidden');
   }
 };

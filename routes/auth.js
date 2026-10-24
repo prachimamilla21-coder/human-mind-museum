@@ -287,4 +287,35 @@ router.post('/record-quiz', authenticateToken, (req, res) => {
   }
 });
 
+// Admin / Curator: View all registered visitors and database activity
+router.get('/visitors', (req, res) => {
+  try {
+    const data = db.read();
+    const safeVisitors = (data.users || []).map(u => ({
+      id: u.id,
+      username: u.username,
+      email: u.email,
+      role: u.role || 'visitor',
+      visitorBadgeId: u.visitorBadgeId || 'HMM-VIS-0000',
+      visitorLevel: u.visitorLevel || 'Novice Explorer',
+      joinDate: u.joinDate,
+      visitedRooms: u.visitedRooms || [],
+      quizResults: u.quizResults || {},
+      badges: u.badges || []
+    }));
+
+    res.json({
+      success: true,
+      database: 'data/museum.json (File-based JSON Document Store)',
+      totalVisitors: safeVisitors.length,
+      visitors: safeVisitors,
+      totalGameScores: (data.gameScores || []).length,
+      totalJournalEntries: (data.journalEntries || []).length
+    });
+  } catch (err) {
+    console.error('Error fetching visitor database:', err);
+    res.status(500).json({ error: 'Failed to retrieve visitor activity.' });
+  }
+});
+
 module.exports = { router, authenticateToken };
